@@ -94,13 +94,17 @@ public class BasicPhysicsEngineUsingBox2D {
 		//Rectangle.add(new BasicRectangle(4.38f,3.370f,0,0, r*1.5f,Color.RED, 100, linearDragForce/10,4));
 		//particles.add(new BasicParticle(0.35f,WORLD_HEIGHT/3f-0.2f,0,0, r,Color.GREEN, 1, linearDragForce));
 		//polygons.add(new BasicPolygon(4.5847774f,4.583193f,0f,0f, r*1.5f,Color.RED, 100, linearDragForce,4));
-		particles.add(new BasicWheel(2.0847774f+2,4.283193f+1f,0f,0f,r*1.2f,Color.WHITE,5f,.2f));
+		particles.add(new BasicWheel(2.0847774f+2,4.283193f+1f,0f,0f,r*1.2f,Color.WHITE,15f,.2f));
 		//particles.add(new BasicWheel(7.2847774f,4.075f+1f,0f,0f,r*1.2f,Color.RED,1f,0.2f));
-		polygons.add(new BasicPolygon(4.5847774f, 4.283193f+r*1.2f, 1, 0.25f, Color.WHITE, 2.8f,0.5f));
-		polygons.add(new BasicPolygon(4.5847774f-r*6.5f, 4.283193f+r*1.2f, 1, 0.25f, Color.WHITE, 2.8f,0.5f));
-		
+		polygons.add(new BasicPolygon(4.5847774f, 4.283193f+r*1.2f, 1, 0.25f, Color.blue, 4.8f,0.5f));
+		polygons.add(new BasicPolygon(4.5847774f-r*6.5f, 4.283193f+r*1.2f, 1, 0.25f, Color.blue, 4.8f,0.5f));
+		polygons.add(new BasicPolygon(4.5847774f, 4.283193f+r*1.2f, 1, 0.25f, Color.gray, 4.8f,0.5f));
+		polygons.add(new BasicPolygon(4.5847774f-r*6.5f, 4.283193f+r*1.2f, 1, 0.25f, Color.gray, 4.8f,0.5f));
 		//particles.add(new BasicWheel(8.0847774f+2,4.283193f+1f,0f,0f,r*1.2f,Color.RED,10005f,0.2f));
-
+		
+		
+		float polyWidth=1;
+		float polyHeight=0.25f;
 		
 		
 		//particles.add(new ParticleAttachedToMousePointer(WORLD_WIDTH/2-2,WORLD_HEIGHT/2-2.2f,1.5f*s,1.2f*s, r,1));//using ParticleAttachedToMousePointer	
@@ -157,24 +161,65 @@ public class BasicPhysicsEngineUsingBox2D {
 //		//jointWheelDef.motorSpeed = 360 * 1;
 //		world.createJoint(jointWheel1Def);
 		
+		
+		
+		
+		//preventing the main body from rotating
+		//particles.get(0).body.setFixedRotation(false);
+		//Left Leg top
 		BasicParticle mainBody = particles.get(0);
 		BasicPolygon tLeft = polygons.get(0);
 		RevoluteJointDef jointDef=new RevoluteJointDef();
 		jointDef.bodyA = mainBody.body;
 		jointDef.bodyB = tLeft.body;
 		jointDef.enableLimit = true;
+		jointDef.collideConnected=false;
 	    jointDef.lowerAngle = -MathUtils.PI / 4.0f;
 	    jointDef.upperAngle = MathUtils.PI / 4.0f;
+	    System.out.println("1Lower Angle"+ jointDef.lowerAngle);
+		System.out.println("1Upper Angle"+ jointDef.upperAngle);
 	    world.createJoint(jointDef);
 	    
+	    //Left Leg Bottom
+	    BasicPolygon tLeftParent = polygons.get(0);
+		BasicPolygon tLeftChild = polygons.get(2);
+		RevoluteJointDef BottomjointDef=new RevoluteJointDef();
+		BottomjointDef.bodyA = tLeftParent.body;
+		BottomjointDef.bodyB = tLeftChild.body;
+		BottomjointDef.localAnchorA=new Vec2((polyWidth/2)+0.25f ,0);
+		BottomjointDef.enableLimit = true;
+		BottomjointDef.collideConnected=false;
+		BottomjointDef.lowerAngle = -2.2944f;
+		BottomjointDef.upperAngle =  -1.0472f ;
+	    world.createJoint(BottomjointDef);
+	    
+	    
+	    //Right Leg TOp
 	    BasicPolygon tRight = polygons.get(1);
 		RevoluteJointDef jointDef1=new RevoluteJointDef();
 		jointDef1.bodyA = mainBody.body;
 		jointDef1.bodyB = tRight.body;
-		jointDef1.localAnchorA=new Vec2(0,0);
-		jointDef1.localAnchorB=new Vec2(-r,0);
+		jointDef1.localAnchorB=new Vec2((polyWidth/2)+0.45f ,0);
 		jointDef1.enableLimit = true;
+		jointDef1.collideConnected=false;
+		jointDef1.lowerAngle = -MathUtils.PI / 4.0f;
+		jointDef1.upperAngle = MathUtils.PI / 4.0f;		
+		
 	    world.createJoint(jointDef1);
+	    
+	  //Right Leg Bottom
+		BasicPolygon tRightChild = polygons.get(3);
+		RevoluteJointDef BottomjointDef1=new RevoluteJointDef();
+		BottomjointDef1.bodyA = tRight.body;
+		BottomjointDef1.bodyB = tRightChild.body;
+		BottomjointDef1.localAnchorA=new Vec2(-(polyWidth/2)+0.5f ,polyHeight/2);
+		BottomjointDef1.enableLimit = true;
+		BottomjointDef1.collideConnected=false;
+		BottomjointDef1.lowerAngle =  -2.26893f;
+		BottomjointDef1.upperAngle =  -1.309f;
+		System.out.println("2Lower Angle"+ BottomjointDef1.lowerAngle);
+		System.out.println("2Upper Angle"+ BottomjointDef1.upperAngle);
+	    world.createJoint(BottomjointDef1);
 		
 		
 		
@@ -491,12 +536,7 @@ public class BasicPhysicsEngineUsingBox2D {
 //			 
 //			 GameOver=true;
 //		 }
-//		 else if(polygons.get(0).body.getPosition().y<4.054148f)
-//		 {
-//			 System.out.println(" The Box fell");
-//			 System.exit(0);
-//		 }
-		 //System.out.println(" " + particles.get(0).body.getAngle());
+		 System.out.println("Rotation " +particles.get(0).body.getAngle());
 		 
 		for (BasicParticle p:particles) {
 			// give the objects an opportunity to add any bespoke forces, e.g. rolling friction

@@ -44,7 +44,7 @@ public class BasicPolygon  {
 		FixtureDef fixtureDef = new FixtureDef();// This class is from Box2D
 		fixtureDef.shape = shape;
 		fixtureDef.density = (float) (mass/((float) numSides)/2f*(radius*radius)*Math.sin(2*Math.PI/numSides));
-		fixtureDef.friction = 0.0f;// this is surface friction;
+		fixtureDef.friction = 1.0f;// this is surface friction;
 		fixtureDef.restitution = 0.5f;
 		body.createFixture(fixtureDef);
 

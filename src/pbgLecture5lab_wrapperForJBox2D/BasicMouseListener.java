@@ -131,27 +131,27 @@ public class BasicMouseListener extends MouseInputAdapter {
 			// update the target of the existing mouse joint.
 			mouseJoint.setTarget(worldCoordinatesOfMousePointer);
 		} 
-//		else if (BasicPhysicsEngineUsingBox2D.ALLOW_MOUSE_POINTER_TO_DRAG_BODIES_ON_SCREEN) {
-//			// Mouse dragging has started, so pick up the object at the mouse pointer and create a mouseJoint linked to that body.
-//			MouseJointDef mj=new MouseJointDef();
-//			Body bodyUnderMousePointer=findBodyAtWorldCoords(worldCoordinatesOfMousePointer);
-//			if (bodyUnderMousePointer!=null) {
-//				mj.bodyA=bodyUnderMousePointer;// bodyA is not used, but you have to set this to something to avoid null pointer error 
-//				mj.bodyB=bodyUnderMousePointer;// bodyB is the object that you want to follow the mouse pointer.
-//				mj.target.set(new Vec2(worldCoordinatesOfMousePointer));//This specifies the world coordinates 
-//				// of the point where you want to stick the pin into - this would usually correspond to 
-//				// the screen coordinates of the point where you first start dragging the mouse pointer. 
-//				mj.collideConnected=false;
-//				mj.maxForce = 1000 * mj.bodyB.getMass();
-//				mj.dampingRatio = 0;
-//				MouseJoint mouseJoint = (MouseJoint) BasicPhysicsEngineUsingBox2D.world.createJoint(mj);
-//				BasicMouseListener.linkMouseDragEventToANewMouseJoint(mouseJoint);// this tells the BasicMouseListener 
-//				// listener to update the target for this mouseJoint, every time the mouse is dragged.
-//			}
-//
-//			//PUT in mouseCLick
-//			
-//		}
+		else if (BasicPhysicsEngineUsingBox2D.ALLOW_MOUSE_POINTER_TO_DRAG_BODIES_ON_SCREEN) {
+			// Mouse dragging has started, so pick up the object at the mouse pointer and create a mouseJoint linked to that body.
+			MouseJointDef mj=new MouseJointDef();
+			Body bodyUnderMousePointer=findBodyAtWorldCoords(worldCoordinatesOfMousePointer);
+			if (bodyUnderMousePointer!=null) {
+				mj.bodyA=bodyUnderMousePointer;// bodyA is not used, but you have to set this to something to avoid null pointer error 
+				mj.bodyB=bodyUnderMousePointer;// bodyB is the object that you want to follow the mouse pointer.
+				mj.target.set(new Vec2(worldCoordinatesOfMousePointer));//This specifies the world coordinates 
+				// of the point where you want to stick the pin into - this would usually correspond to 
+				// the screen coordinates of the point where you first start dragging the mouse pointer. 
+				mj.collideConnected=false;
+				mj.maxForce = 1000 * mj.bodyB.getMass();
+				mj.dampingRatio = 0;
+				MouseJoint mouseJoint = (MouseJoint) BasicPhysicsEngineUsingBox2D.world.createJoint(mj);
+				BasicMouseListener.linkMouseDragEventToANewMouseJoint(mouseJoint);// this tells the BasicMouseListener 
+				// listener to update the target for this mouseJoint, every time the mouse is dragged.
+			}
+
+			//PUT in mouseCLick
+			
+		}
 	}
 
 	public static void linkMouseDragEventToANewMouseJoint(MouseJoint mj) {
