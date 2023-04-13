@@ -11,7 +11,7 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
-public class BasicParticle  {
+public class LegDestination  {
 	/* Author: Michael Fairbank
 	 * Creation Date: 2016-02-05 (JBox2d version)
 	 * Significant changes applied:
@@ -23,7 +23,7 @@ public class BasicParticle  {
 	protected final Body body;
 
 
-	public BasicParticle(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float linearDragForce) {
+	public LegDestination(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float linearDragForce , short cBits,short mBits,short groupIndex) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
 		BodyDef bodyDef = new BodyDef();  // a Box2D object
 		bodyDef.type = BodyType.DYNAMIC; // this says the physics engine is to move it automatically
@@ -37,12 +37,14 @@ public class BasicParticle  {
 		fixtureDef.density = (float) (mass/(Math.PI*radius*radius));
 		fixtureDef.friction = .1f;// this is surface friction;
 		fixtureDef.restitution = 0.0f;
+		fixtureDef.filter.categoryBits = cBits;
+		fixtureDef.filter.maskBits = mBits;
+		fixtureDef.filter.groupIndex = groupIndex;
 		body.createFixture(fixtureDef);
 		this.linearDragForce=linearDragForce;
 		this.mass=mass;
 		this.SCREEN_RADIUS=(int)Math.max(BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(radius),1);
 		this.col=col;
-		System.out.println(fixtureDef.filter.groupIndex);
 	}
 
 	public void draw(Graphics2D g) {

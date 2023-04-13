@@ -69,7 +69,7 @@ public class BasicPolygon  {
 		this.polygonPath=polygonPath;
 	}
 
-	public BasicPolygon(float sx, float sy, float width, float hight, Color col, float mass, float rollingFriction) {
+	public BasicPolygon(float sx, float sy, float width, float hight, Color col, float mass, float rollingFriction , short cBits, short mBits,short groupIndex) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
 		BodyDef bodyDef = new BodyDef();  // a Box2D object
 		bodyDef.type = BodyType.DYNAMIC; // this says the physics engine is to move it automatically
@@ -85,6 +85,9 @@ public class BasicPolygon  {
 		fixtureDef.density = (float) (mass/2f*(width*hight));
 		fixtureDef.friction = 2.6f;// this is surface friction;
 		fixtureDef.restitution = 0.5f;
+		fixtureDef.filter.categoryBits = cBits;
+		fixtureDef.filter.maskBits = mBits;
+		fixtureDef.filter.groupIndex = groupIndex;
 		body.createFixture(fixtureDef);
 
 

@@ -13,7 +13,10 @@ import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.joints.DistanceJointDef;
 import org.jbox2d.dynamics.joints.MouseJoint;
+import org.jbox2d.dynamics.joints.PrismaticJoint;
+import org.jbox2d.dynamics.joints.PrismaticJointDef;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
 import org.jbox2d.dynamics.joints.WheelJointDef;
 
@@ -70,6 +73,8 @@ public class BasicPhysicsEngineUsingBox2D {
 	public List<BasicNewRect> Rectangle;
 	public List<AnchoredBarrier> barriers;
 	public List<ElasticConnector> connectors;
+	
+	public List<LegDestination> newLegPos;
 	public static MouseJoint mouseJointDef;
 	WheelJointDef jointWheelDef;
 	public static enum LayoutMode {CONVEX_ARENA, CONCAVE_ARENA, CONVEX_ARENA_WITH_CURVE, PINBALL_ARENA, RECTANGLE, CANNON,CARTGAME,CHALLENGE,SNOOKER_TABLE};
@@ -82,6 +87,7 @@ public class BasicPhysicsEngineUsingBox2D {
 		Rectangle = new ArrayList<BasicNewRect>();
 		barriers = new ArrayList<AnchoredBarrier>();
 		connectors=new ArrayList<ElasticConnector>();
+		newLegPos = new ArrayList<LegDestination>();
 		LayoutMode layout=LayoutMode.CHALLENGE;
 		// pinball:
 		float linearDragForce=.2f/*0.2f*/;
@@ -96,11 +102,20 @@ public class BasicPhysicsEngineUsingBox2D {
 		//polygons.add(new BasicPolygon(4.5847774f,4.583193f,0f,0f, r*1.5f,Color.RED, 100, linearDragForce,4));
 		particles.add(new BasicWheel(2.0847774f+2,4.283193f+1f,0f,0f,r*1.2f,Color.WHITE,15f,.2f));
 		//particles.add(new BasicWheel(7.2847774f,4.075f+1f,0f,0f,r*1.2f,Color.RED,1f,0.2f));
-		polygons.add(new BasicPolygon(4.5847774f, 4.283193f+r*1.2f, 1, 0.25f, Color.blue, 4.8f,0.5f));
-		polygons.add(new BasicPolygon(4.5847774f-r*6.5f, 4.283193f+r*1.2f, 1, 0.25f, Color.blue, 4.8f,0.5f));
-		polygons.add(new BasicPolygon(4.5847774f, 4.283193f+r*1.2f, 1, 0.25f, Color.gray, 4.8f,0.5f));
-		polygons.add(new BasicPolygon(4.5847774f-r*6.5f, 4.283193f+r*1.2f, 1, 0.25f, Color.gray, 4.8f,0.5f));
+		polygons.add(new BasicPolygon(4.5847774f, 4.283193f+r*1.2f, 1, 0.25f, Color.red, 4.8f,0.5f, Constants.BIT_PLAYER_Body,(short)Constants.BIT_WALL,(short)0));
+		polygons.add(new BasicPolygon(4.5847774f-r*6.5f, 4.283193f+r*1.2f, 1, 0.25f, Color.blue, 4.8f,0.5f, Constants.BIT_PLAYER_Body,(short)Constants.BIT_WALL,(short)0));
+		polygons.add(new BasicPolygon(4.5847774f, 4.283193f+r*1.2f, 1, 0.25f, Color.gray, 4.8f,0.5f, Constants.BIT_PLAYER_Body,(short)Constants.BIT_WALL,(short)0));
+		polygons.add(new BasicPolygon(4.5847774f-r*6.5f, 4.283193f+r*1.2f, 1, 0.25f, Color.gray, 4.8f,0.5f , Constants.BIT_PLAYER_Body,(short)Constants.BIT_WALL,(short)0));
+		newLegPos.add(new LegDestination(particles.get(0).body.getPosition().x+1,particles.get(0).body.getPosition().y+1, 
+				0, 0, r, Color.green, s, 0, Constants.BIT_SENSOR,(short) Constants.BIT_WALL,(short)0));
 		//particles.add(new BasicWheel(8.0847774f+2,4.283193f+1f,0f,0f,r*1.2f,Color.RED,10005f,0.2f));
+		
+		System.out.println("Main Body Filter " + particles.get(0).body.getFixtureList().getFilterData().groupIndex +
+			"  "+particles.get(0).body.getFixtureList().getFilterData().categoryBits + "  "+particles.get(0).body.getFixtureList().getFilterData().maskBits);
+		System.out.println("Main Body Filter " + polygons.get(0).body.getFixtureList().getFilterData().groupIndex +
+				"  "+polygons.get(0).body.getFixtureList().getFilterData().categoryBits + "  "+polygons.get(0).body.getFixtureList().getFilterData().maskBits);
+		System.out.println("Main Body Filter " + polygons.get(1).body.getFixtureList().getFilterData().groupIndex +
+				"  "+polygons.get(1).body.getFixtureList().getFilterData().categoryBits + "  "+polygons.get(1).body.getFixtureList().getFilterData().maskBits);
 		
 		
 		float polyWidth=1;
@@ -166,7 +181,7 @@ public class BasicPhysicsEngineUsingBox2D {
 		
 		//preventing the main body from rotating
 		//particles.get(0).body.setFixedRotation(false);
-		//Left Leg top
+		//Right Leg top
 		BasicParticle mainBody = particles.get(0);
 		BasicPolygon tLeft = polygons.get(0);
 		RevoluteJointDef jointDef=new RevoluteJointDef();
@@ -180,13 +195,13 @@ public class BasicPhysicsEngineUsingBox2D {
 		System.out.println("1Upper Angle"+ jointDef.upperAngle);
 	    world.createJoint(jointDef);
 	    
-	    //Left Leg Bottom
+	    //RIght Leg Bottom
 	    BasicPolygon tLeftParent = polygons.get(0);
 		BasicPolygon tLeftChild = polygons.get(2);
 		RevoluteJointDef BottomjointDef=new RevoluteJointDef();
 		BottomjointDef.bodyA = tLeftParent.body;
 		BottomjointDef.bodyB = tLeftChild.body;
-		BottomjointDef.localAnchorA=new Vec2((polyWidth/2)+0.25f ,0);
+		BottomjointDef.localAnchorA=new Vec2((polyWidth/2)+0.25f ,polyHeight/2 + 0.025f);
 		BottomjointDef.enableLimit = true;
 		BottomjointDef.collideConnected=false;
 		BottomjointDef.lowerAngle = -2.2944f;
@@ -194,7 +209,7 @@ public class BasicPhysicsEngineUsingBox2D {
 	    world.createJoint(BottomjointDef);
 	    
 	    
-	    //Right Leg TOp
+	    //Left Leg TOp
 	    BasicPolygon tRight = polygons.get(1);
 		RevoluteJointDef jointDef1=new RevoluteJointDef();
 		jointDef1.bodyA = mainBody.body;
@@ -207,12 +222,12 @@ public class BasicPhysicsEngineUsingBox2D {
 		
 	    world.createJoint(jointDef1);
 	    
-	  //Right Leg Bottom
+	  //Left Leg Bottom
 		BasicPolygon tRightChild = polygons.get(3);
 		RevoluteJointDef BottomjointDef1=new RevoluteJointDef();
 		BottomjointDef1.bodyA = tRight.body;
 		BottomjointDef1.bodyB = tRightChild.body;
-		BottomjointDef1.localAnchorA=new Vec2(-(polyWidth/2)+0.5f ,polyHeight/2);
+		BottomjointDef1.localAnchorA=new Vec2(-(polyWidth/2)+0.5f ,(polyHeight/2) + 0.15f);
 		BottomjointDef1.enableLimit = true;
 		BottomjointDef1.collideConnected=false;
 		BottomjointDef1.lowerAngle =  -2.26893f;
@@ -221,7 +236,14 @@ public class BasicPhysicsEngineUsingBox2D {
 		System.out.println("2Upper Angle"+ BottomjointDef1.upperAngle);
 	    world.createJoint(BottomjointDef1);
 		
-		
+		//Distant Joint for LegDeestination Left
+	    DistanceJointDef lfDestJoint = new DistanceJointDef();
+	    LegDestination lfDest = newLegPos.get(0);
+	    lfDestJoint.bodyA = mainBody.body;
+	    lfDestJoint.bodyB = lfDest.body;
+	    lfDestJoint.length = 0.9f;
+		world.createJoint(lfDestJoint);
+	   //
 		
 
 		if (false) {
@@ -415,9 +437,9 @@ public class BasicPhysicsEngineUsingBox2D {
 			float ttx = tx, tty = ty;
 			for (int j = 0; j < i; j++) {
 				if(j%2==0) {
-					polygons.add(new BasicPolygon(ttx, tty, w, h, Color.GREEN, 1f,0.2f));
+					polygons.add(new BasicPolygon(ttx, tty, w, h, Color.GREEN, 1f,0.2f, Constants.BIT_PLAYER_Body,Constants.BIT_WALL,(short)0));
 				}
-				polygons.add(new BasicPolygon(ttx, tty, w, h, Color.RED, 1f,0.2f));
+				polygons.add(new BasicPolygon(ttx, tty, w, h, Color.RED, 1f,0.2f, Constants.BIT_PLAYER_Body,Constants.BIT_WALL,(short)0));
 				ttx += w + w/3;
 			}
 			tx += 2*w/3;
@@ -498,6 +520,11 @@ public class BasicPhysicsEngineUsingBox2D {
 		//System.out.println(mousePressed + " " + newMousePressed );
 		newMousePressed= listener.isMouseButtonPressed();
 		//
+		
+		
+		
+		
+		
 		int VELOCITY_ITERATIONS=NUM_EULER_UPDATES_PER_SCREEN_REFRESH;
 		int POSITION_ITERATIONS=NUM_EULER_UPDATES_PER_SCREEN_REFRESH;
 		float AddForce =5f;
@@ -530,13 +557,8 @@ public class BasicPhysicsEngineUsingBox2D {
 			 showLine=true;
 			 
 		 }
-//		 if((polygons.get(1).body.getAngle()<-1.3f && !GameOver) || (polygons.get(1).body.getAngle()> 1.4f && !GameOver)  || (polygons.get(0).body.getPosition().y<4.054148f && !GameOver))
-//		 {
-//			 System.out.println(" Game Over");
-//			 
-//			 GameOver=true;
-//		 }
-		 System.out.println("Rotation " +particles.get(0).body.getAngle());
+
+		 //System.out.println(" Rightleg Rot " + polygons.get(0).body.getAngle());
 		 
 		for (BasicParticle p:particles) {
 			// give the objects an opportunity to add any bespoke forces, e.g. rolling friction

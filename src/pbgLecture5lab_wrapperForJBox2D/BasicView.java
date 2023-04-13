@@ -42,7 +42,9 @@ public class BasicView extends JComponent {
 		for (BasicParticle p : game.particles)
 			p.draw(g);
 		for (BasicPolygon p : game.polygons)
-			p.draw(g);		
+			p.draw(g);	
+		for (LegDestination p : game.newLegPos)
+			p.draw(g);
 		for (ElasticConnector c : game.connectors)
 			c.draw(g);
 		for (AnchoredBarrier b : game.barriers)
