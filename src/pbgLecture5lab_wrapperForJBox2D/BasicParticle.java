@@ -37,7 +37,9 @@ public class BasicParticle  {
 		fixtureDef.density = (float) (mass/(Math.PI*radius*radius));
 		fixtureDef.friction = .1f;// this is surface friction;
 		fixtureDef.restitution = 0.0f;
+		
 		body.createFixture(fixtureDef);
+		body.setUserData(this);
 		this.linearDragForce=linearDragForce;
 		this.mass=mass;
 		this.SCREEN_RADIUS=(int)Math.max(BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(radius),1);

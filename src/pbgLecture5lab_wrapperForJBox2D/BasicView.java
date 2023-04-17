@@ -4,9 +4,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.awt.BasicStroke;
 
 import javax.swing.JComponent;
+
+import org.jbox2d.common.Vec2;
 
 public class BasicView extends JComponent {
 	/* Author: Michael Fairbank
@@ -14,6 +17,8 @@ public class BasicView extends JComponent {
 	 * Significant changes applied:
 	 */
 	// background colour
+	private ArrayList<Vec2> points;
+    private int curveIntensity = 50;
 	public static final Color BG_COLOR = Color.BLACK;
 
 	private BasicPhysicsEngineUsingBox2D game;
@@ -21,6 +26,7 @@ public class BasicView extends JComponent {
 	public BasicView(BasicPhysicsEngineUsingBox2D game) {
 		this.game = game;
 	}
+	  
 	
 	@Override
 	public void paintComponent(Graphics g0) {
@@ -33,18 +39,31 @@ public class BasicView extends JComponent {
 			
 			//g0.translate(BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(-posX),BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(posY));
 		}
+		Vec2 particlePosition = game.particles.get(0).body.getPosition();
+		double oX = getWidth() - BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(particlePosition.x)/0.7;
+	    double oY = getHeight() - BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(particlePosition.y)/0.7;
+
+	    int offsetX=(int)oX;
+	    int offsetY=(int)oY;
 		Graphics2D g = (Graphics2D) g0;
 		// paint the background
 		g.setColor(BG_COLOR);
-		g.fillRect(0, 0, getWidth(), getHeight());
+		g.fillRect(-offsetX, -offsetY, getWidth(), getHeight());
+		//g.translate(+offsetX,-offsetY);
 		//g.translate(BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(-game.polygons.get(0).body.getPosition().x)+BasicPhysicsEngineUsingBox2D.SCREEN_WIDTH,BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(-game.polygons.get(0).body.getPosition().y)-BasicPhysicsEngineUsingBox2D.SCREEN_HEIGHT*1.5f);
 		g.translate(-game.particles.get(0).body.getPosition().x,game.particles.get(0).body.getPosition().y );
 		for (BasicParticle p : game.particles)
 			p.draw(g);
+		for (BasicParticle p : game.particles1)
+			p.draw(g);
 		for (BasicPolygon p : game.polygons)
 			p.draw(g);	
-//		for (LegDestination p : game.newLegPos)
-//			p.draw(g);
+		for (BasicPolygon p : game.legSensors)
+			p.draw(g);
+		for (LegDestination p : game.newLegPos)
+			p.draw(g);
+		for (GroundTest p : game.GroundTesting)
+			p.draw(g);
 		for (BodyLeg p : game.LegPos)
 			p.draw(g);
 		for (ElasticConnector c : game.connectors)
@@ -55,6 +74,11 @@ public class BasicView extends JComponent {
 			g.setColor(Color.WHITE);
 			g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[] {10}, 0));
 			g.drawLine(game.linex1,game. liney1,game. linex2, game.liney2);
+		}
+		if (game.showCurve) {
+			g.setColor(Color.WHITE);
+			//g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[] {10}, 0));
+			g.drawLine(game.linex1,game. liney1,game.ropelineX,game.ropelineY);
 		}
 		
 	}

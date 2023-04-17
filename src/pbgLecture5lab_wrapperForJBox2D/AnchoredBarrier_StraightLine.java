@@ -34,6 +34,7 @@ public class AnchoredBarrier_StraightLine extends AnchoredBarrier {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.STATIC;
 		bodyDef.position = new Vec2(startx,starty);
+		bodyDef.setUserData(this);
 		Body body = w.createBody(bodyDef);
 		this.body=body;
 		Vec2[] vertices = new Vec2[] { new Vec2(), new Vec2(endx-startx, endy-starty) };

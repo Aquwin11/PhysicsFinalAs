@@ -21,7 +21,7 @@ public class BodyLeg  {
 	private final float linearDragForce,mass;
 	public final Color col;
 	protected final Body body;
-
+	
 
 	public BodyLeg(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float linearDragForce,short cBits,short mBits, short groupIndex) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
@@ -40,6 +40,7 @@ public class BodyLeg  {
 		fixtureDef.filter.categoryBits = cBits;
 		fixtureDef.filter.maskBits = mBits;
 		fixtureDef.filter.groupIndex = groupIndex;
+		body.setUserData(this);
 		body.createFixture(fixtureDef);
 		this.linearDragForce=linearDragForce;
 		this.mass=mass;

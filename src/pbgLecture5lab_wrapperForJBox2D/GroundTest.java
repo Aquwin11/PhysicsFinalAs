@@ -15,7 +15,7 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
 
-public class BasicPolygon  {
+public class GroundTest  {
 	/* Author: Michael Fairbank
 	 * Creation Date: 2016-02-05 (JBox2d version)
 	 * Significant changes applied:
@@ -26,16 +26,14 @@ public class BasicPolygon  {
 	public final Color col;
 	protected final Body body;
 	public final Path2D.Float polygonPath;
-	public boolean isWalled;
-	
-	
-	public BasicPolygon(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, int numSides) {
+
+	public GroundTest(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, int numSides) {
 		this(sx, sy, vx, vy, radius, col, mass, rollingFriction,mkRegularPolygon(numSides, radius),numSides);
 	}
-	public BasicPolygon(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, Path2D.Float polygonPath, int numSides) {
+	public GroundTest(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, Path2D.Float polygonPath, int numSides) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
 		BodyDef bodyDef = new BodyDef();  // a Box2D object
-		bodyDef.type = BodyType.DYNAMIC; // this says the physics engine is to move it automatically
+		bodyDef.type = BodyType.STATIC; // this says the physics engine is to move it automatically
 		bodyDef.position.set(sx, sy);
 		bodyDef.linearVelocity.set(vx, vy);
 		bodyDef.angularDamping = 0.1f;
@@ -71,10 +69,10 @@ public class BasicPolygon  {
 		this.polygonPath=polygonPath;
 	}
 
-	public BasicPolygon(float sx, float sy, float width, float hight, Color col, float mass, float rollingFriction , short cBits, short mBits,short groupIndex) {
+	public GroundTest(float sx, float sy, float width, float hight, Color col, float mass, float rollingFriction , short cBits, short mBits,short groupIndex) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
 		BodyDef bodyDef = new BodyDef();  // a Box2D object
-		bodyDef.type = BodyType.DYNAMIC; // this says the physics engine is to move it automatically
+		bodyDef.type = BodyType.STATIC; // this says the physics engine is to move it automatically
 		bodyDef.position.set(sx, sy);
 		bodyDef.linearVelocity.set(0, 0);
 		bodyDef.angularDamping = 0.1f;
@@ -91,7 +89,7 @@ public class BasicPolygon  {
 		fixtureDef.filter.categoryBits = cBits;
 		fixtureDef.filter.maskBits = mBits;
 		fixtureDef.filter.groupIndex = groupIndex;
-		body.setUserData(this);
+		body.setUserData("ground");
 		body.createFixture(fixtureDef);
 
 

@@ -8,7 +8,7 @@ public class BasicKeyListener extends KeyAdapter {
 	 * Creation Date: 2016-01-28
 	 * Significant changes applied:
 	 */
-	private static boolean rotateRightKeyPressed, rotateLeftKeyPressed, thrustKeyPressed,moveleft,moveright; 
+	private static boolean rotateRightKeyPressed, rotateLeftKeyPressed, thrustKeyPressed,moveleft,moveright,SpacePressed; 
 
 	public static boolean isRotateRightKeyPressed() {
 		return rotateRightKeyPressed;
@@ -28,6 +28,9 @@ public class BasicKeyListener extends KeyAdapter {
 	public static boolean isMoveRight() {
 		return moveright;
 	}
+	public static boolean isSpacePressed() {
+		return SpacePressed;
+	}
 
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
@@ -46,6 +49,9 @@ public class BasicKeyListener extends KeyAdapter {
 			break;
 		case KeyEvent.VK_D:
 			moveright=true;
+			break;
+		case KeyEvent.VK_SPACE:
+			SpacePressed=true;
 			break;
 		}
 		
@@ -70,6 +76,9 @@ public class BasicKeyListener extends KeyAdapter {
 			break;
 		case KeyEvent.VK_D:
 			moveright=false;
+			break;
+		case KeyEvent.VK_SPACE:
+			SpacePressed=false;
 			break;
 		}
 	}

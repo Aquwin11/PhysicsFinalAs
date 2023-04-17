@@ -41,7 +41,13 @@ public class ElasticConnector {
 
 	}
 	
-
+//    public void destroyJoint()
+//    {
+//    	if (joint != null) {
+//            BasicPhysicsEngineUsingBox2D.world.destroyJoint(joint);
+//            joint = null;
+//        }
+//    }
 	public void draw(Graphics2D g) {
 		int x1 = BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(particle1.body.getPosition().x);
 		int y1 = BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(particle1.body.getPosition().y);

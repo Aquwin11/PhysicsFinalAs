@@ -353,7 +353,9 @@ public class Body {
   public final Vec2 getPosition() {
     return m_xf.p;
   }
-
+  public void setPosition(Vec2 position) {
+	    m_xf.p.set(position);
+	}
   /**
    * Get the angle in radians.
    * 

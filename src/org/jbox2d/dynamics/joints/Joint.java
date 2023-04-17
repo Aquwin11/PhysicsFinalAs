@@ -74,6 +74,14 @@ public abstract class Joint {
   public static void destroy(Joint joint) {
     joint.destructor();
   }
+  public static void destroyJointDef(JointDef jointDef) {
+	    if (jointDef == null) {
+	        return;
+	    }
+	    jointDef.bodyA = null;
+	    jointDef.bodyB = null;
+	    jointDef.userData = null;
+	}
 
   private final JointType m_type;
   public Joint m_prev;

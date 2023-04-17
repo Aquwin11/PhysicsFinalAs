@@ -52,6 +52,17 @@ public class Vec2 implements Serializable {
     y = 0.0f;
   }
 
+  public static float getAngle(Vec2 vector1, Vec2 vector2) {
+	    float dotProduct = Vec2.dot(vector1, vector2);
+	    float magnitudeProduct = vector1.length() * vector2.length();
+	    float angle = (float) Math.acos(dotProduct / magnitudeProduct);
+	    return angle;
+	}
+  
+  public static Vec2 VecZero() {
+	    
+	    return new Vec2(0,0);
+	}
   /** Set the vector component-wise. */
   public final Vec2 set(float x, float y) {
     this.x = x;
@@ -156,7 +167,20 @@ public class Vec2 implements Serializable {
     y *= invLength;
     return length;
   }
-
+  public final Vec2 normalise() {
+		Vec2 temp = new Vec2(this.x,this.y);
+		float len = (float) mag();
+      return new Vec2(temp.x/len, temp.y/len);
+  }
+  
+  public final double mag() {
+		return Math.hypot(this.x, this.y);
+	}
+      
+  public final Vec2 mult(float fac) {
+      return new Vec2(this.x*fac,this.y*fac);
+  }  
+  
   /** True if the vector represents a pair of valid, non-infinite floating point numbers. */
   public final boolean isValid() {
     return !Float.isNaN(x) && !Float.isInfinite(x) && !Float.isNaN(y) && !Float.isInfinite(y);
@@ -203,6 +227,12 @@ public class Vec2 implements Serializable {
   public final static float cross(final Vec2 a, final Vec2 b) {
     return a.x * b.y - a.y * b.x;
   }
+  
+  public final static float Distance(final Vec2 a, final Vec2 b) {
+	  	double dx = b.x - a.x;
+	    double dy = b.y - a.y;
+	    return (float)Math.sqrt(dx*dx+dy*dy);
+	  }
 
   public final static Vec2 cross(Vec2 a, float s) {
     return new Vec2(s * a.y, -s * a.x);
@@ -254,6 +284,14 @@ public class Vec2 implements Serializable {
     out.y = a.y < b.y ? a.y : b.y;
   }
 
+  
+  public final static Vec2 sub(Vec2 a, Vec2 b)
+  {
+	  float x = a.x - b.x;
+	  float y = a.y - b.y;
+	  return new Vec2(x,y);
+  }
+  
   public final static void maxToOut(Vec2 a, Vec2 b, Vec2 out) {
     out.x = a.x > b.x ? a.x : b.x;
     out.y = a.y > b.y ? a.y : b.y;

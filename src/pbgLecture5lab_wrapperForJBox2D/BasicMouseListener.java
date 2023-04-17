@@ -20,7 +20,8 @@ public class BasicMouseListener extends MouseInputAdapter {
 	 * Significant changes applied: 2016-02-10 added mouseJoint code to allow dragging of bodies
 	 */
 	private static int mouseX, mouseY;
-	private static boolean mouseButtonPressed;
+	private static boolean RightmouseButtonPressed;
+	private static boolean LeftmouseButtonPressed;
 
 	private static MouseJoint mouseJoint;
 	
@@ -32,7 +33,7 @@ public class BasicMouseListener extends MouseInputAdapter {
 	public void mouseMoved(MouseEvent e) {
 		mouseX=e.getX();
 		mouseY=e.getY();
-		mouseButtonPressed=false;
+		RightmouseButtonPressed=false;
 		//System.out.println("Move event: "+mouseX+","+mouseY);
 		if (mouseJoint!=null) {
 			// we're obviously not dragging any more, so drop the current mouseJoint
@@ -40,9 +41,13 @@ public class BasicMouseListener extends MouseInputAdapter {
 		}
 	}
 	float mousePressed=0;
-	public boolean isMouseButtonPressed() {
+	public boolean isRightMouseButtonPressed() {
 		
-		return mouseButtonPressed;
+		return RightmouseButtonPressed;
+	}
+public boolean isLeftMouseButtonPressed() {
+		
+		return LeftmouseButtonPressed;
 	}
 	public void mousePressed(MouseEvent e)
 	{
@@ -50,34 +55,37 @@ public class BasicMouseListener extends MouseInputAdapter {
          if ((modifiers & e.BUTTON1_MASK) == InputEvent.BUTTON1_MASK) {
              // Mask may not be set properly prior to Java 2
              // See SwingUtilities.isLeftMouseButton() for workaround
+        	 LeftmouseButtonPressed=true;
+        	 RightmouseButtonPressed=false;
          }
          if ((modifiers & InputEvent.BUTTON2_MASK) == InputEvent.BUTTON2_MASK) {
-             System.out.println("Middle button pressed." );
+             //System.out.println("Middle button pressed." );
          }
          if ((modifiers & InputEvent.BUTTON3_MASK) == InputEvent.BUTTON3_MASK) {
-        	 
-				System.out.println("Right button pressed." /* + getWorldCoordinatesOfMousePointer() */);
+        	 	LeftmouseButtonPressed=false;
+				//System.out.println("Right button pressed." /* + getWorldCoordinatesOfMousePointer() */);
 				Vec2 pointerLocator = getWorldCoordinatesOfMousePointer();
-	             System.out.println("Left button pressed." + pointerLocator);
+	             //System.out.println("Left button pressed." + pointerLocator);
 	             game.linex2=BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocator.x);
 	             game.liney2=BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocator.y);
 	             game.showLine=true;
-	             mouseButtonPressed = true;
+	             RightmouseButtonPressed = true;
          }
 		
 		//System.out.println("Mouse Clicked");
 		super.mousePressed(e);
 	}
-	public void mouseIsFalse()
+	public void RightmouseIsFalse()
 	{
-		mouseButtonPressed=false;
+		RightmouseButtonPressed=false;
 	}
 	public void mouseReleased(MouseEvent e)
 	{
 		//ballCanMove=true;
 		//System.out.println("Released" + getWorldCoordinatesOfMousePointer());
 		game.showLine=false;
-		mouseButtonPressed = false;
+		RightmouseButtonPressed = false;
+		LeftmouseButtonPressed=false;
 		super.mouseReleased(e);
 	}
 
@@ -90,41 +98,44 @@ public class BasicMouseListener extends MouseInputAdapter {
 		return new Vec2(BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(mouseX),
 				BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(mouseY)/*-1.0f*/);
 	}
-	double maxDistance=400f;
+	double maxDistance=100f;
 	public void mouseDragged(MouseEvent e) {	
-		Vec2 pointerLocation = getWorldCoordinatesOfMousePointer();
-		if(calculateDistanceBetweenPointsWithHypot(game.linex1, game.liney1, 
-				BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocation.x), 
-				BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocation.y))<=maxDistance)
+		if(RightmouseButtonPressed)
 		{
-			game.linex2=BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocation.x);
-	        game.liney2=BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocation.y);  
-		}
-		else
-		{
-//			game.linex2=game.linex1;
-//	        game.liney2=game.liney1;
-			game.linex2=BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocation.x);
-	        game.liney2=BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocation.y); 
+			Vec2 pointerLocation = getWorldCoordinatesOfMousePointer();
+			if(calculateDistanceBetweenPointsWithHypot(game.linex1, game.liney1, 
+					BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocation.x), 
+					BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocation.y))<=maxDistance)
+			{
+				game.linex2=BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocation.x);
+		        game.liney2=BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocation.y);  
+			}
+			else
+			{
+//				game.linex2=game.linex1;
+//		        game.liney2=game.liney1;
+				game.linex2=BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocation.x);
+		        game.liney2=BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocation.y); 
+		        
+		        game.showLine=false;
+			}
+			
+			Vec2 TestMag = new Vec2(game.linex2,game.liney2);
+			//System.out.println("TestMag "+TestMag);
+			//System.out.println(" New Distance " + calculateDistance(game.linex1, game.liney1, game.linex2, game.liney2));
+//			System.out.println("Distance" + calculateDistanceBetweenPointsWithHypot(game.linex1, game.liney1, 
+//					BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocation.x), 
+//					BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocation.y)));
+	        //System.out.println("New Magnitude" + (game.linex2/Magnitude(TestMag)) + "  " + (game.liney2/Magnitude(TestMag)));
+	        double ratio = calculateDistance(game.linex1, game.liney1, game.linex2, game.liney2)/maxDistance;
+	        double linex3 = game.linex1 + (game.linex2 - game.linex1) * ratio;
+	        double liney3 = game.liney1 + (game.liney2 - game.liney1) * ratio;
+	        //System.out.println("Check " +linex3+"  "+ liney3+"  ");
 	        
-	        game.showLine=false;
+			mouseX=e.getX();
+			mouseY=e.getY();
+			
 		}
-		
-		Vec2 TestMag = new Vec2(game.linex2,game.liney2);
-		System.out.println("TestMag "+TestMag);
-		System.out.println(" New Distance " + calculateDistance(game.linex1, game.liney1, game.linex2, game.liney2));
-//		System.out.println("Distance" + calculateDistanceBetweenPointsWithHypot(game.linex1, game.liney1, 
-//				BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocation.x), 
-//				BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocation.y)));
-        System.out.println("New Magnitude" + (game.linex2/Magnitude(TestMag)) + "  " + (game.liney2/Magnitude(TestMag)));
-        double ratio = calculateDistance(game.linex1, game.liney1, game.linex2, game.liney2)/maxDistance;
-        double linex3 = game.linex1 + (game.linex2 - game.linex1) * ratio;
-        double liney3 = game.liney1 + (game.liney2 - game.liney1) * ratio;
-        System.out.println("Check " +linex3+"  "+ liney3+"  ");
-        
-		mouseX=e.getX();
-		mouseY=e.getY();
-		mouseButtonPressed=true;
 		Vec2 worldCoordinatesOfMousePointer = getWorldCoordinatesOfMousePointer();
 		if (mouseJoint!=null) {
 			// we are already dragging a body on the screen

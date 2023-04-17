@@ -444,7 +444,6 @@ public class World {
     }
 
     Joint j = Joint.create(this, def);
-
     // Connect to the world list.
     j.m_prev = null;
     j.m_next = m_jointList;

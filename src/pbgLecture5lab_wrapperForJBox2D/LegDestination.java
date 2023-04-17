@@ -12,15 +12,16 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
 public class LegDestination  {
-	/* Author: Michael Fairbank
+	/*
 	 * Creation Date: 2016-02-05 (JBox2d version)
 	 * Significant changes applied:
 	 */
 	public final int SCREEN_RADIUS;
 
 	private final float linearDragForce,mass;
-	public final Color col;
+	public Color col;
 	protected final Body body;
+	public boolean isgrouned;
 
 
 	public LegDestination(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float linearDragForce , short cBits,short mBits,short groupIndex) {
@@ -29,14 +30,15 @@ public class LegDestination  {
 		bodyDef.type = BodyType.DYNAMIC; // this says the physics engine is to move it automatically
 		bodyDef.position.set(sx, sy);
 		bodyDef.linearVelocity.set(vx, vy);
+		bodyDef.setUserData(this);
 		this.body = w.createBody(bodyDef);
 		CircleShape circleShape = new CircleShape();// This class is from Box2D
 		circleShape.m_radius = radius;
 		FixtureDef fixtureDef = new FixtureDef();// This class is from Box2D
 		fixtureDef.shape = circleShape;
 		fixtureDef.density = (float) (mass/(Math.PI*radius*radius));
-		fixtureDef.friction = .1f;// this is surface friction;
-		fixtureDef.restitution = 0.0f;
+		fixtureDef.friction = 13.1f;// this is surface friction;
+		fixtureDef.restitution = -1.0f;
 		fixtureDef.filter.categoryBits = cBits;
 		fixtureDef.filter.maskBits = mBits;
 		fixtureDef.filter.groupIndex = groupIndex;
@@ -45,6 +47,8 @@ public class LegDestination  {
 		this.mass=mass;
 		this.SCREEN_RADIUS=(int)Math.max(BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(radius),1);
 		this.col=col;
+		
+		
 	}
 
 	public void draw(Graphics2D g) {
@@ -65,6 +69,16 @@ public class LegDestination  {
 			body.applyForceToCenter(dragForce1);
 		}
 		
+	}
+	
+	public void changeColor()
+	{
+		col = Color.white;
+	}
+	
+	public void resetColor()
+	{
+		col = Color.GRAY;
 	}
 	
 }
