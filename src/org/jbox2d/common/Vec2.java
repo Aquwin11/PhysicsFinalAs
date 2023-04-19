@@ -231,7 +231,7 @@ public class Vec2 implements Serializable {
   public final static float Distance(final Vec2 a, final Vec2 b) {
 	  	double dx = b.x - a.x;
 	    double dy = b.y - a.y;
-	    return (float)Math.sqrt(dx*dx+dy*dy);
+	    return (float)Math.sqrt((dx*dx)+(dy*dy));
 	  }
 
   public final static Vec2 cross(Vec2 a, float s) {

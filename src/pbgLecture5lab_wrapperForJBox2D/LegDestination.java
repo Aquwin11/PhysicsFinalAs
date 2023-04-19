@@ -37,7 +37,7 @@ public class LegDestination  {
 		FixtureDef fixtureDef = new FixtureDef();// This class is from Box2D
 		fixtureDef.shape = circleShape;
 		fixtureDef.density = (float) (mass/(Math.PI*radius*radius));
-		fixtureDef.friction = 13.1f;// this is surface friction;
+		fixtureDef.friction = .1f;// this is surface friction;
 		fixtureDef.restitution = -1.0f;
 		fixtureDef.filter.categoryBits = cBits;
 		fixtureDef.filter.maskBits = mBits;

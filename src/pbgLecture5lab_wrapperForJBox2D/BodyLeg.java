@@ -21,6 +21,7 @@ public class BodyLeg  {
 	private final float linearDragForce,mass;
 	public final Color col;
 	protected final Body body;
+	public boolean isgrouned;
 	
 
 	public BodyLeg(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float linearDragForce,short cBits,short mBits, short groupIndex) {

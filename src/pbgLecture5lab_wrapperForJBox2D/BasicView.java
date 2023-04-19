@@ -48,7 +48,7 @@ public class BasicView extends JComponent {
 		Graphics2D g = (Graphics2D) g0;
 		// paint the background
 		g.setColor(BG_COLOR);
-		g.fillRect(-offsetX, -offsetY, getWidth(), getHeight());
+		g.fillRect(0, 0, getWidth(), getHeight());
 		//g.translate(+offsetX,-offsetY);
 		//g.translate(BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(-game.polygons.get(0).body.getPosition().x)+BasicPhysicsEngineUsingBox2D.SCREEN_WIDTH,BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(-game.polygons.get(0).body.getPosition().y)-BasicPhysicsEngineUsingBox2D.SCREEN_HEIGHT*1.5f);
 		g.translate(-game.particles.get(0).body.getPosition().x,game.particles.get(0).body.getPosition().y );
@@ -60,7 +60,11 @@ public class BasicView extends JComponent {
 			p.draw(g);	
 		for (BasicPolygon p : game.legSensors)
 			p.draw(g);
+		for (BasicPolygon p : game.legSensors1)
+			p.draw(g);
 		for (LegDestination p : game.newLegPos)
+			p.draw(g);
+		for (LegDestination p : game.newLegPos1)
 			p.draw(g);
 		for (GroundTest p : game.GroundTesting)
 			p.draw(g);
