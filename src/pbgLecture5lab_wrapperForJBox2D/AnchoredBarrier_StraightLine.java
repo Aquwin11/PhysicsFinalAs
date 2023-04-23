@@ -35,6 +35,7 @@ public class AnchoredBarrier_StraightLine extends AnchoredBarrier {
 		bodyDef.type = BodyType.STATIC;
 		bodyDef.position = new Vec2(startx,starty);
 		bodyDef.setUserData(this);
+		//bodyDef.setUserData("Ground");
 		Body body = w.createBody(bodyDef);
 		this.body=body;
 		Vec2[] vertices = new Vec2[] { new Vec2(), new Vec2(endx-startx, endy-starty) };
@@ -51,7 +52,7 @@ public class AnchoredBarrier_StraightLine extends AnchoredBarrier {
 		int y1 = BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(startPos.y);
 		int x2 = BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(endPos.x);
 		int y2 = BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(endPos.y);
-		g.setColor(col);
+		g.setColor(Color.green);
 		g.drawLine(x1, y1, x2, y2);
 	}
 

@@ -27,13 +27,13 @@ public class BasicNewRect  {
 	protected final Body body;
 	private final Path2D.Float polygonPath;
 
-	public BasicNewRect(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, int numSides) {
-		this(sx, sy, vx, vy, radius, col, mass, rollingFriction,mkRegularPolygon(numSides, radius),numSides);
+	public BasicNewRect(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, int numSides, Body destroyableBody,short cBits, short mBits,short groupIndex) {
+		this(sx, sy, vx, vy, radius, col, mass, rollingFriction,mkRegularPolygon(numSides, radius),numSides,cBits,mBits,groupIndex);
 	}
-	public BasicNewRect(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, Path2D.Float polygonPath, int numSides) {
+	public BasicNewRect(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, Path2D.Float polygonPath, int numSides,short cBits, short mBits,short groupIndex) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
 		BodyDef bodyDef = new BodyDef();  // a Box2D object
-		bodyDef.type = BodyType.DYNAMIC; // this says the physics engine is to move it automatically
+		bodyDef.type = BodyType.STATIC; // this says the physics engine is to move it automatically
 		bodyDef.position.set(sx, sy);
 		bodyDef.linearVelocity.set(vx, vy);
 		bodyDef.angularDamping = 0.1f;
@@ -47,7 +47,8 @@ public class BasicNewRect  {
 		fixtureDef.friction = 0.1f;// this is surface friction;
 		fixtureDef.restitution = 0.5f;
 		body.createFixture(fixtureDef);
-
+		body.setFixedRotation(true);
+		body.setUserData(this);
 //		// code to test adding a second fixture:
 //		PolygonShape shape2 = new PolygonShape();
 //		Vec2[] vertices2 = verticesOfPath2D(polygonPath, numSides);
@@ -70,10 +71,10 @@ public class BasicNewRect  {
 	}
 	
 	public void draw(Graphics2D g) {
-		g.setColor(col);
+		g.setColor(Color.RED);
 		Vec2 position = body.getPosition();
 		//float angle = body.getAngle(); 
-		float angle = 5.49379f; 
+		float angle = 1.5708f; 
 		AffineTransform af = new AffineTransform();
 		af.translate(BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(position.x), BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(position.y));
 		af.scale(ratioOfScreenScaleToWorldScale, -ratioOfScreenScaleToWorldScale);// there is a minus in here because screenworld is flipped upsidedown compared to physics world

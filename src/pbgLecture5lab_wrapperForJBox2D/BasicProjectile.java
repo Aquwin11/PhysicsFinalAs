@@ -16,7 +16,7 @@ import org.jbox2d.dynamics.contacts.Contact;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 
-public class BasicParticle  {
+public class BasicProjectile  {
 	/* Author: Michael Fairbank
 	 * Creation Date: 2016-02-05 (JBox2d version)
 	 * Significant changes applied:
@@ -24,11 +24,11 @@ public class BasicParticle  {
 	public final int SCREEN_RADIUS;
 
 	private final float linearDragForce,mass;
-	public Color col;
+	public final Color col;
 	protected final Body body;
 
 
-	public BasicParticle(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float linearDragForce,short cBits, short mBits,short groupIndex) {
+	public BasicProjectile(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float linearDragForce,short cBits, short mBits,short groupIndex) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
 		BodyDef bodyDef = new BodyDef();  // a Box2D object
 		bodyDef.type = BodyType.DYNAMIC; // this says the physics engine is to move it automatically

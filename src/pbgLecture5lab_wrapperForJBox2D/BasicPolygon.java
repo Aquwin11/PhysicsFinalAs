@@ -26,13 +26,14 @@ public class BasicPolygon  {
 	public final Color col;
 	protected final Body body;
 	public final Path2D.Float polygonPath;
+	public Body manipulatableBody;
 	public boolean isWalled;
 	
 	
-	public BasicPolygon(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, int numSides) {
-		this(sx, sy, vx, vy, radius, col, mass, rollingFriction,mkRegularPolygon(numSides, radius),numSides);
+	public BasicPolygon(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, int numSides, Body destroyableBody,short cBits, short mBits,short groupIndex) {
+		this(sx, sy, vx, vy, radius, col, mass, rollingFriction,mkRegularPolygon(numSides, radius),numSides,destroyableBody,cBits,mBits,groupIndex);
 	}
-	public BasicPolygon(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, Path2D.Float polygonPath, int numSides) {
+	public BasicPolygon(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, Path2D.Float polygonPath, int numSides , Body D,short cBits, short mBits,short groupIndex) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
 		BodyDef bodyDef = new BodyDef();  // a Box2D object
 		bodyDef.type = BodyType.DYNAMIC; // this says the physics engine is to move it automatically
@@ -49,7 +50,8 @@ public class BasicPolygon  {
 		fixtureDef.friction = 1.0f;// this is surface friction;
 		fixtureDef.restitution = 0.5f;
 		body.createFixture(fixtureDef);
-
+		body.setUserData(this);
+		manipulatableBody = D;
 //		// code to test adding a second fixture:
 //		PolygonShape shape2 = new PolygonShape();
 //		Vec2[] vertices2 = verticesOfPath2D(polygonPath, numSides);
@@ -92,7 +94,7 @@ public class BasicPolygon  {
 		fixtureDef.filter.maskBits = mBits;
 		fixtureDef.filter.groupIndex = groupIndex;
 		body.setUserData(this);
-		body.createFixture(fixtureDef);
+		
 
 
 		this.rollingFriction=rollingFriction;
@@ -101,6 +103,7 @@ public class BasicPolygon  {
 		System.out.println("Screenradius="+ratioOfScreenScaleToWorldScale);
 		this.col=col;
 		this.polygonPath=mkRegularPolygon(width, hight);
+		body.createFixture(fixtureDef);
 		//System.out.println(this.polygonPath.getBounds());
 	}
 
@@ -177,6 +180,15 @@ public class BasicPolygon  {
 
 		p.closePath();
 		return p;
+	}
+	
+	
+	public void changewallPosition()
+	{
+		if(manipulatableBody!=null)
+		{
+			manipulatableBody.setLinearVelocity(new Vec2(0,50f));
+		}
 	}
 	
 }
