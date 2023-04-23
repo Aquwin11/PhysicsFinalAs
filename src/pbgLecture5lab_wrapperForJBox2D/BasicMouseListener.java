@@ -66,8 +66,8 @@ public boolean isLeftMouseButtonPressed() {
 				//System.out.println("Right button pressed." /* + getWorldCoordinatesOfMousePointer() */);
 				Vec2 pointerLocator = getWorldCoordinatesOfMousePointer();
 	             //System.out.println("Left button pressed." + pointerLocator);
-	             game.linex2=BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocator.x);
-	             game.liney2=BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocator.y);
+	             game.linex2=BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocator.x)-game.SCREEN_WIDTH + game.linex1;
+	             game.liney2=BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocator.y)-(int)(game.SCREEN_HEIGHT) + game.liney1;
 	             game.showLine=true;
 	             RightmouseButtonPressed = true;
          }
@@ -91,6 +91,7 @@ public boolean isLeftMouseButtonPressed() {
 
 
 	public static Vec2 getWorldCoordinatesOfMousePointer() {
+		
 		return new Vec2(BasicPhysicsEngineUsingBox2D.convertScreenXtoWorldX(mouseX),
 				BasicPhysicsEngineUsingBox2D.convertScreenYtoWorldY(mouseY)/*-1.0f*/);
 	}
@@ -106,8 +107,8 @@ public boolean isLeftMouseButtonPressed() {
 			mouseX=e.getX();
 			mouseY=e.getY();
 			Vec2 pointerLocator = getWorldCoordinatesOfMousePointer();
-            game.linex2=BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocator.x);
-            game.liney2=BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocator.y);
+            game.linex2=BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(pointerLocator.x)-game.SCREEN_WIDTH + game.linex1;
+            game.liney2=BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(pointerLocator.y)-(int)(game.SCREEN_HEIGHT) + game.liney1;
 			
 		}
 		Vec2 worldCoordinatesOfMousePointer = getScreenCoordinatesOfMousePointer();

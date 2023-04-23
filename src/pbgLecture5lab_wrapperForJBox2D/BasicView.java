@@ -39,7 +39,7 @@ public class BasicView extends JComponent {
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.translate(BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(-game.particles.get(0).body.getPosition().x)+BasicPhysicsEngineUsingBox2D.SCREEN_WIDTH,BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(-game.particles.get(0).body.getPosition().y)-BasicPhysicsEngineUsingBox2D.SCREEN_HEIGHT*1.25f);
 //		g.translate(BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(-game.particles.get(0).body.getPosition().x)+BasicPhysicsEngineUsingBox2D.SCREEN_WIDTH,BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(-game.particles.get(0).body.getPosition().y)-BasicPhysicsEngineUsingBox2D.SCREEN_HEIGHT*1.25f);
-//		g.translate(-game.particles.get(0).body.getPosition().x,game.particles.get(0).body.getPosition().y );
+		//g.translate(-game.particles.get(0).body.getPosition().x,game.particles.get(0).body.getPosition().y );
 		//System.out.println(game.SCREEN_WIDTH);
 		for (BasicParticle p : game.particles)
 			p.draw(g);
@@ -49,11 +49,11 @@ public class BasicView extends JComponent {
 			p.draw(g);	
 		for (BasicPolygon p : game.legSensors)
 			p.draw(g);
-		for (LegDestination p : game.newLegPos)
+		for (BodyLeg p : game.newLegPos)
 			p.draw(g);
 		for (BasicProjectile p : game.BulletList)
 			p.draw(g);
-		for (LegDestination p : game.newLegPos1)
+		for (BodyLeg p : game.newLegPos1)
 			p.draw(g);
 		for (BodyLeg p : game.LegPos)
 			p.draw(g);

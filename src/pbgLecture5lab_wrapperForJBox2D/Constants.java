@@ -9,7 +9,7 @@ public final class Constants {
     public static final short BIT_SENSOR = 4;
     public static final short BIT_TARGET = 8;
     public static final short BIT_PROJECTILE = 8;
-    public static final short BIT_ADDITIONALBODY = 16;
+    public static final short BIT_Main = 16;
     public static final short BIT_OBSTICLE = 32;
    
 

@@ -24,7 +24,7 @@ public class BodyLeg  {
 	public boolean isgrouned;
 	
 
-	public BodyLeg(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float linearDragForce,short cBits,short mBits, short groupIndex) {
+	public BodyLeg(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float linearDragForce,short cBits,short mBits, short groupIndex,float friction,float restitution) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
 		BodyDef bodyDef = new BodyDef();  // a Box2D object
 		bodyDef.type = BodyType.DYNAMIC; // this says the physics engine is to move it automatically
@@ -47,7 +47,6 @@ public class BodyLeg  {
 		this.mass=mass;
 		this.SCREEN_RADIUS=(int)Math.max(BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(radius),1);
 		this.col=col;
-		System.out.println(fixtureDef.filter.groupIndex);
 	}
 
 	public void draw(Graphics2D g) {
