@@ -3,24 +3,18 @@ package pbgLecture5lab_wrapperForJBox2D;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
-import org.jbox2d.dynamics.contacts.Contact;
-import org.jbox2d.callbacks.ContactImpulse;
-import org.jbox2d.callbacks.ContactListener;
 
+
+
+//This class is similar to the BasicParticle class
 public class BasicProjectile  {
-	/* Author: Michael Fairbank
-	 * Creation Date: 2016-02-05 (JBox2d version)
-	 * Significant changes applied:
-	 */
 	public final int SCREEN_RADIUS;
 
 	private final float linearDragForce,mass;
@@ -52,16 +46,13 @@ public class BasicProjectile  {
 		this.mass=mass;
 		this.SCREEN_RADIUS=(int)Math.max(BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(radius),1);
 		this.col=col;
-		System.out.println(fixtureDef.filter.groupIndex);
 	}
 
 	public void draw(Graphics2D g) {
 		int x = BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(body.getPosition().x);
 		int y = BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(body.getPosition().y);
-		//int angle = BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(body.getAngle());
 		g.setColor(col);
 		g.fillOval(x - SCREEN_RADIUS, y - SCREEN_RADIUS, 2 * SCREEN_RADIUS, 2 * SCREEN_RADIUS);
-		//g.drawLine(x, y, (x+20) * angle*10, (y+20)  * angle*10);
 	}
 
 

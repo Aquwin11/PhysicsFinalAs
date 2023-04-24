@@ -29,14 +29,14 @@ public class BasicPolygon  {
 	public Body manipulatableBody;
 	public boolean isWalled;
 	
-	
-	public BasicPolygon(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, int numSides, Body destroyableBody,short cBits, short mBits,short groupIndex) {
-		this(sx, sy, vx, vy, radius, col, mass, rollingFriction,mkRegularPolygon(numSides, radius),numSides,destroyableBody,cBits,mBits,groupIndex);
+	//Added more variables to the constructor provide more flexibility when creating objects
+	public BasicPolygon(float sx, float sy, float vx, float vy, float radius, BodyType bodyType,Color col, float mass, float rollingFriction, int numSides, Body destroyableBody,short cBits, short mBits,short groupIndex) {
+		this(sx, sy, vx, vy, radius, bodyType,col, mass, rollingFriction,mkRegularPolygon(numSides, radius),numSides,destroyableBody,cBits,mBits,groupIndex);
 	}
-	public BasicPolygon(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, Path2D.Float polygonPath, int numSides , Body D,short cBits, short mBits,short groupIndex) {
+	public BasicPolygon(float sx, float sy, float vx, float vy, float radius, BodyType bodyType,Color col, float mass, float rollingFriction, Path2D.Float polygonPath, int numSides , Body D,short cBits, short mBits,short groupIndex) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
 		BodyDef bodyDef = new BodyDef();  // a Box2D object
-		bodyDef.type = BodyType.DYNAMIC; // this says the physics engine is to move it automatically
+		bodyDef.type = bodyType; // this says the physics engine is to move it automatically
 		bodyDef.position.set(sx, sy);
 		bodyDef.linearVelocity.set(vx, vy);
 		bodyDef.angularDamping = 0.1f;
@@ -52,23 +52,9 @@ public class BasicPolygon  {
 		body.createFixture(fixtureDef);
 		body.setUserData(this);
 		manipulatableBody = D;
-//		// code to test adding a second fixture:
-//		PolygonShape shape2 = new PolygonShape();
-//		Vec2[] vertices2 = verticesOfPath2D(polygonPath, numSides);
-//		for (int i=0;i<vertices2.length;i++) {
-//			vertices2[i]=new Vec2(vertices2[i].x+0.7f,vertices2[i].y+0.7f);
-//		}
-//		shape2.set(vertices2, numSides);
-//		FixtureDef fixtureDef2 = new FixtureDef();// This class is from Box2D
-//		fixtureDef2.shape = shape2;
-//		fixtureDef2.density = 1;//(float) (mass/(Math.PI*radius*radius));
-//		fixtureDef2.friction = 0.1f;
-//		fixtureDef2.restitution = 0.5f;
-//		body.createFixture(fixtureDef2);
 		this.rollingFriction=rollingFriction;
 		this.mass=mass;
 		this.ratioOfScreenScaleToWorldScale=BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(1);
-		System.out.println("Screenradius="+ratioOfScreenScaleToWorldScale);
 		this.col=col;
 		this.polygonPath=polygonPath;
 	}
@@ -100,11 +86,9 @@ public class BasicPolygon  {
 		this.rollingFriction=rollingFriction;
 		this.mass=mass;
 		this.ratioOfScreenScaleToWorldScale=BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(1);
-		System.out.println("Screenradius="+ratioOfScreenScaleToWorldScale);
 		this.col=col;
 		this.polygonPath=mkRegularPolygon(width, hight);
-		body.createFixture(fixtureDef);
-		//System.out.println(this.polygonPath.getBounds());
+		body.createFixture(fixtureDef);;
 	}
 
 

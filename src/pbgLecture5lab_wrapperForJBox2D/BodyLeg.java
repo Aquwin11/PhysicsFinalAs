@@ -52,10 +52,8 @@ public class BodyLeg  {
 	public void draw(Graphics2D g) {
 		int x = BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(body.getPosition().x);
 		int y = BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(body.getPosition().y);
-		//int angle = BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(body.getAngle());
 		g.setColor(col);
 		g.fillOval(x - SCREEN_RADIUS, y - SCREEN_RADIUS, 2 * SCREEN_RADIUS, 2 * SCREEN_RADIUS);
-		//g.drawLine(x, y, (x+20) * angle*10, (y+20)  * angle*10);
 	}
 
 

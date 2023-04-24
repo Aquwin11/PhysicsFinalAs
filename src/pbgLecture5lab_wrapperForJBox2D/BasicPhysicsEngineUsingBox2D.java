@@ -5,14 +5,10 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.text.View;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
-import org.jbox2d.callbacks.RayCastCallback;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.WorldManifold;
 import org.jbox2d.common.MathUtils;
@@ -43,7 +39,7 @@ public class BasicPhysicsEngineUsingBox2D {
 	public static final int SCREEN_HEIGHT = 680;
 	public static final int SCREEN_WIDTH = 640;
 	public static final Dimension FRAME_SIZE = new Dimension(
-			SCREEN_WIDTH, SCREEN_HEIGHT);
+			SCREEN_WIDTH*2, SCREEN_HEIGHT*2);
 	public static final float WORLD_WIDTH=10;//metres
 	public static final float WORLD_HEIGHT=SCREEN_HEIGHT*(WORLD_WIDTH/SCREEN_WIDTH);// meters - keeps world dimensions in same aspect ratio as screen dimensions, so that circles get transformed into circles as opposed to ovals
 	public static final float GRAVITY=10f;
@@ -76,32 +72,35 @@ public class BasicPhysicsEngineUsingBox2D {
 		return (SCREEN_HEIGHT-screenY)*WORLD_HEIGHT/SCREEN_HEIGHT;
 	}
 		
-	int numTrial=1;
-	public BasicPolygon shootTrialObj;
-	public List<BasicParticle> particles;
-	public Body mainPlayerBody;
-	public List<BasicParticle> grappleObj;
-	public List<BasicProjectile> BulletList;
-	public List<BasicPolygon> trials;
-	public List<BasicPolygon> polygons;
-	public List<BasicPolygon> legSensors;
-	public List<BasicNewRect> Spikes;
-	public List<AnchoredBarrier> barriers;
-	public List<Vec2> DistanceList ;
-	public List<Vec2> GhostLegAngle ;
-	public List<BodyLeg> LegPos;
-	public List<BodyLeg> newLegPos;
-	public List<BodyLeg> newLegPos1;
-	public boolean gameover=true;
+	int numTrial=0;
+	public BasicPolygon shootTrialObj; //Trail one Object
+	public boolean grabObjReached; // Trail two pass state
+	public List<BasicParticle> particles; // Main body, eye and eggs
+	public Body mainPlayerBody; // spider Main Body
+	public List<BasicParticle> grappleObj; //grapple objects
+	public List<BasicProjectile> BulletList; //Projectile list
+	public List<BasicPolygon> trials; // trials list of traps and triggers
+	public List<BasicPolygon> polygons; 
+	public List<BasicPolygon> legSensors; //lists of sensors
+	public List<BasicNewRect> Spikes; // spikes list
+	public List<AnchoredBarrier> barriers; // walls and ground
+	public List<Vec2> DistanceList; // 
+	public List<Vec2> GhostLegAngle ; // 
+	public List<BodyLeg> LegPos; // list of leg object
+	public List<BodyLeg> newLegPos; // list of new leg position
+	public List<BodyLeg> newLegPos1; // list of shoulder bones 
+	public boolean gameover=true; //gameover state
+	// canMovestates
+	boolean canMoveRight = true; 
+	boolean canMoveLeft = true;
 	BasicParticle otherObj;
 	//public List<RevoluteJointDef> bodyParts;
 	public static enum LayoutMode {CHALLENGE,MAINLEVEL};
 	public BasicPhysicsEngineUsingBox2D() {
-		//Wheels = new ArrayList<BasicWheel>();
+		//Beginning popup panel
 		int Welcome = JOptionPane.showConfirmDialog(null, "Welcome to Leggy's Logic", "Leggy's Logic", JOptionPane.DEFAULT_OPTION);
 	    if (Welcome == JOptionPane.YES_OPTION) 
 	    {
-	    	//startGame();
 	    	int Tutorial_Option = JOptionPane.showConfirmDialog(null, "                          Tutorial:                "+"\n Would you like to go through the tutorial", "Leggy's Logic", JOptionPane.YES_NO_OPTION);
 	    	if(Tutorial_Option == JOptionPane.CLOSED_OPTION)
 		    {
@@ -166,9 +165,9 @@ public class BasicPhysicsEngineUsingBox2D {
 	    }
 		
 	}
+	//Game Loop
 	public void startGame()
 	{
-		System.out.println("gameover"+ gameover);
 		world = new World(new Vec2(0, -GRAVITY));// create Box2D container for everything
 		world.setContinuousPhysics(true);
 		particles = new ArrayList<BasicParticle>();
@@ -193,11 +192,12 @@ public class BasicPhysicsEngineUsingBox2D {
 		
 		mainPlayerBody = particles.get(0).body;
 		particles.add(new BasicParticle(3.732203f,5.0525184f,0f,0f,0.1f,Color.WHITE,0.2f,.2f,Constants.BIT_Main,(short) Constants.BIT_WALL,(short)0));
-		grappleObj.add(new BasicParticle(60.732203f,8.325184f,0f,0f,r*1.2f,Color.WHITE,999999f,.2f,Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0));
-		grappleObj.add(new BasicParticle(70.732203f,8.325184f,0f,0f,r*1.2f,Color.WHITE,9f,.2f,Constants.BIT_WALL,(short) (Constants.BIT_PLAYER_Body |Constants.BIT_WALL|Constants.BIT_Main) ,(short)0));
-		grappleObj.add(new BasicParticle(80.732203f,8.325184f,0f,0f,r*1.2f,Color.WHITE,999999f,.2f,Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0));
+		particles.add(new BasicParticle(113.732203f,5.0525184f,0f,0f,0.1f,Color.WHITE,5f,.2f,Constants.BIT_Main,(short) Constants.BIT_WALL,(short)0));
+		particles.add(new BasicParticle(114.732203f,5.0525184f,0f,0f,0.1f,Color.WHITE,5f,.2f,Constants.BIT_Main,(short) Constants.BIT_WALL,(short)0));
+		grappleObj.add(new BasicParticle(101.732203f,7.325184f,0f,0f,r*1.2f,Color.WHITE,999999f,.2f,Constants.BIT_WALL,(short) (Constants.BIT_PLAYER_Body |Constants.BIT_WALL|Constants.BIT_Main) ,(short)0));
+		grappleObj.add(new BasicParticle(81.732203f,7.325184f,0f,0f,r*1.2f,Color.WHITE,999999f,.2f,Constants.BIT_WALL,(short) (Constants.BIT_PLAYER_Body |Constants.BIT_WALL|Constants.BIT_Main) ,(short)0));
 		grappleObj.add(new BasicParticle(42.732203f,8.325184f,0f,0f,r*1.2f,Color.WHITE,999999f,.2f,Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0));
-		grappleObj.add(new BasicParticle(4f,10.525184f,0f,0f,r*1.2f,Color.WHITE,999999f,.2f,Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0));
+		grappleObj.add(new BasicParticle(-40f,10.525184f,0f,0f,r*1.2f,Color.WHITE,999999f,.2f,Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0));
 		
 		polygons.add(new BasicPolygon(4.5847774f, 4.283193f+r*1.2f, 1, 0.25f, Color.WHITE, 4.8f,0.5f, Constants.BIT_PLAYER_Body,(short)Constants.BIT_WALL,(short)0));
 		polygons.add(new BasicPolygon(4.5847774f-r*6.5f, 4.283193f+r*1.2f, 1, 0.25f, Color.WHITE, 4.8f,0.5f, Constants.BIT_PLAYER_Body,(short)Constants.BIT_WALL,(short)0));
@@ -212,53 +212,42 @@ public class BasicPhysicsEngineUsingBox2D {
 		newLegPos.add(new BodyLeg(2.8907132f,4.8429394f, 0, 0,r/2f, Color.blue, 1, 2, Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0,0.1f,-1f));
 		newLegPos1.add(new BodyLeg(2.8907132f,4.8429394f, 0, 0,r/2f, Color.GRAY, 1, 2, Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0,0.1f,-1f));
 		newLegPos.add(new BodyLeg(5.828504f,4.840214f, 0, 0, r/2f, Color.cyan, 1, 2, Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0,0.1f,-1f));
-		//newLegPos1.add(new LegDestination(5.828504f,4.840214f, 0, 0, r/2f, Color.GRAY, 1, 1, Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0));
 		newLegPos.add(new BodyLeg(2.1355329f,4.8409095f, 0, 0, r/2f, Color.green, 1, 2, Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0,0.1f,-1f));
-		//newLegPos1.add(new LegDestination(2.1355329f,4.8409095f, 0, 0, r/2f, Color.GRAY, 1, 1, Constants.BIT_PLAYER_Body,(short) Constants.BIT_WALL,(short)0));
 		LegPos.add(new BodyLeg(4.9963517f,4.8406105f, 0, 0, r/2, Color.WHITE, 1, linearDragForce, Constants.BIT_PLAYER_Body, Constants.BIT_WALL,(short) 0,1.5f,0.0f));
 		LegPos.add(new BodyLeg(2.8907132f,4.8429394f, 0, 0, r/2, Color.WHITE, 1, linearDragForce, Constants.BIT_PLAYER_Body, Constants.BIT_WALL,(short) 0,1.5f,0.0f));
 		LegPos.add(new BodyLeg(5.828504f,4.840214f, 0, 0, r/2, Color.WHITE, 1, linearDragForce, Constants.BIT_PLAYER_Body, Constants.BIT_WALL,(short) 0,1.5f,0.0f));
 		LegPos.add(new BodyLeg(2.1355329f,4.8409095f, 0, 0, r/2, Color.WHITE, 1, linearDragForce, Constants.BIT_PLAYER_Body, Constants.BIT_WALL,(short) 0,1.5f,0.0f));
 		legSensors.add(new BasicPolygon(4.9963517f,4.8406105f, 0.095f, 0.05f, Color.WHITE, 1, linearDragForce, Constants.BIT_PLAYER_Body, Constants.BIT_WALL,(short) 0));
-		//legSensors1.add(new BasicPolygon(4.9963517f,4.8406105f, 0.5f, 0.25f, Color.WHITE, 1, linearDragForce, Constants.BIT_PLAYER_Body, Constants.BIT_WALL,(short) 0));
 		legSensors.add(new BasicPolygon(2.8907132f,4.8429394f, 0.095f, 0.05f, Color.WHITE, 3, linearDragForce, Constants.BIT_PLAYER_Body, Constants.BIT_WALL,(short) 0));
-		//legSensors1.add(new BasicPolygon(2.8907132f,4.8429394f, 1f, 0.075f, Color.WHITE, 3, linearDragForce, Constants.BIT_PLAYER_Body, Constants.BIT_WALL,(short) 0));
 		legSensors.add(new BasicPolygon(5.828504f, 4.840214f, 0.095f, 0.05f, Color.WHITE, 1, linearDragForce, Constants.BIT_PLAYER_Body, Constants.BIT_WALL,(short) 0));
 		legSensors.add(new BasicPolygon(2.1355329f,4.8409095f, 0.095f, 0.05f, Color.WHITE, 1, linearDragForce, Constants.BIT_PLAYER_Body, Constants.BIT_WALL,(short) 0));
-		shootTrialObj = new BasicPolygon(27, 11f/*4.75f*/, 1, 4, Color.GRAY, 1000f, 0, Constants.BIT_WALL, (short) (Constants.BIT_PLAYER_Body | Constants.BIT_WALL ),(short)0);
+		shootTrialObj = new BasicPolygon(27, 4.75f/*11f*/, 1, 4, Color.GRAY, 1000f, 0, Constants.BIT_WALL, (short) (Constants.BIT_PLAYER_Body | Constants.BIT_WALL ),(short)0);
 		shootTrialObj.body.setFixedRotation(true);
-		shootTrialObj.body.m_type = BodyType.STATIC;
-		BasicPolygon shootTrial1 = new BasicPolygon(26f,10.525184f , 0, 0, 0.5f, Color.white, 1, 0, 5, shootTrialObj.body, Constants.BIT_TARGET,(short) Constants.BIT_PLAYER_Body,(short)0);
+		BasicPolygon shootTrial1 = new BasicPolygon(26f,10.525184f , 0, 0, 0.5f,BodyType.STATIC ,Color.white, 1, 0, 5, shootTrialObj.body, Constants.BIT_TARGET,(short) Constants.BIT_PLAYER_Body,(short)0);
 		trials.add(shootTrialObj);
-		shootTrial1.body.m_type = BodyType.STATIC;
-		System.out.println("is it creating again");
-		//trials.add(shootTrial1);
-//		BasicPolygon GRABTrialObj = new BasicPolygon(75f, WORLD_WIDTH/5.95f, 1, 4, Color.GRAY, 1000f, 0, Constants.BIT_WALL, (short) (Constants.BIT_PLAYER_Body | Constants.BIT_WALL ),(short)0);
-//		trials.add(GRABTrialObj);
-//		BasicPolygon GRAB = new BasicPolygon(72f,WORLD_WIDTH/5.95f , 0, 0, 1f, Color.white, 1000, 0, 6, null, Constants.BIT_SENSOR,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_Main),(short)0);
-//		GRAB.body.m_type=BodyType.STATIC;
-//		GRAB.body.setTransform(GRAB.body.getPosition(), 90);
-//		GRAB.body.setFixedRotation(true);
-//		trials.add(GRAB);
-		//Spikes.add(new BasicNewRect(8f,5f , 0, 0, 0.5f, Color.red, 1000, 0, 3, null, Constants.BIT_OBSTICLE,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_ADDITIONALBODY),(short)0));
-//		BasicPolygon shootTrial3 = new BasicPolygon(10f,5.525184f , 0, 0, 0.25f, Color.white, 1, 0, 5, Spikes.get(0).body, Constants.BIT_TARGET,(short) Constants.BIT_PLAYER_Body,(short)0);
-//		trials.add(shootTrial3);
-		otherObj = new BasicParticle(mainPlayerBody.getPosition().x-1,12f,0f,0f,0.36f,Color.WHITE,9f,.1f,Constants.BIT_WALL,(short) Constants.BIT_PLAYER_Body,(short)0);
-		otherObj.body.setActive(false);
-		BasicPolygon shootTrial2 = new BasicPolygon(10f,10.525184f , 0, 0, 0.5f, Color.white, 1, 0, 5, otherObj.body, Constants.BIT_TARGET,(short) Constants.BIT_PLAYER_Body,(short)0);
-		shootTrial2.body.m_type = BodyType.STATIC;
+		trials.add(shootTrial1);
+		BasicPolygon GRABTrialObj = new BasicPolygon(75f, WORLD_WIDTH/5.95f, 1, 4, Color.GRAY, 1000f, 0, Constants.BIT_WALL, (short) (Constants.BIT_PLAYER_Body | Constants.BIT_WALL ),(short)0);
+		GRABTrialObj.body.setFixedRotation(true);
+		trials.add(GRABTrialObj);
+		BasicPolygon GRAB = new BasicPolygon(67f,WORLD_WIDTH/6.05f , 0, 0, 1f, BodyType.STATIC,Color.white, 1000, 0, 6, GRABTrialObj.body, Constants.BIT_SENSOR,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_Main),(short)0);
+		GRAB.body.setTransform(GRAB.body.getPosition(), 90);
+		GRAB.body.setFixedRotation(true);
+		trials.add(GRAB);
+		Spikes.add(new BasicNewRect(92f,2.75f , 0, 0, 0.5f, Color.red, 1000, 0, 3, null, Constants.BIT_OBSTICLE,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_Main),(short)0));
+		BasicPolygon shootTrial3 = new BasicPolygon(94f,3.25184f , 0, 0, 0.25f, BodyType.DYNAMIC,Color.white, 1, 0, 5, Spikes.get(0).body, Constants.BIT_TARGET,(short) Constants.BIT_PLAYER_Body,(short)0);
+		trials.add(shootTrial3);
+		BasicPolygon shootTrial2 = new BasicPolygon(-100f,10.525184f , 0, 0, 0.5f, BodyType.STATIC,Color.white, 1, 0, 5, null, Constants.BIT_TARGET,(short) Constants.BIT_PLAYER_Body,(short)0);
 		trials.add(shootTrial2);
-		Spikes.add(new BasicNewRect(42.5f,WORLD_HEIGHT/12.5f, 0, 0, 0.5f, Color.red, 1000, 0, 3, null, Constants.BIT_OBSTICLE,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_Main),(short)0));
-		Spikes.add(new BasicNewRect(43.5f,WORLD_HEIGHT/12.5f, 0, 0, 0.5f, Color.red, 1000, 0, 3, null, Constants.BIT_OBSTICLE,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_Main),(short)0));
-		Spikes.add(new BasicNewRect(44.5f,WORLD_HEIGHT/12.5f, 0, 0, 0.5f, Color.red, 1000, 0, 3, null, Constants.BIT_OBSTICLE,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_Main),(short)0));
+		Spikes.add(new BasicNewRect(42.5f,WORLD_HEIGHT/14.5f, 0, 0, 0.5f, Color.red, 1000, 0, 3, null, Constants.BIT_OBSTICLE,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_Main),(short)0));
+		Spikes.add(new BasicNewRect(43.5f,WORLD_HEIGHT/14.5f, 0, 0, 0.5f, Color.red, 1000, 0, 3, null, Constants.BIT_OBSTICLE,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_Main),(short)0));
+		Spikes.add(new BasicNewRect(44.5f,WORLD_HEIGHT/14.5f, 0, 0, 0.5f, Color.red, 1000, 0, 3, null, Constants.BIT_OBSTICLE,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_Main),(short)0));
 		legSensors.get(2).body.setTransform(legSensors.get(2).body.getPosition(), 0.785398f);
 		legSensors.get(3).body.setTransform(legSensors.get(3).body.getPosition(), -0.785398f);
-		
 		float polyWidth=1;
 		float polyHeight=0.25f;
-		grappleObj.get(0).body.m_type = BodyType.STATIC;
-		grappleObj.get(1).body.m_type = BodyType.STATIC;
-		
+		BasicPolygon BLackBox =  new BasicPolygon(67f,WORLD_WIDTH/8f , 0, 0, 1.5f, BodyType.STATIC,Color.BLACK, 1000, 0, 4, GRABTrialObj.body, Constants.BIT_SENSOR,(short)( Constants.BIT_PLAYER_Body | Constants.BIT_Main),(short)0);
+		BLackBox.body.setTransform(BLackBox.body.getPosition(), 0.785398f);
+		trials.add(BLackBox);
 		for(int i=0;i<grappleObj.size();i++)
 		{
 			grappleObj.get(i).body.m_type = BodyType.STATIC;
@@ -281,7 +270,6 @@ public class BasicPhysicsEngineUsingBox2D {
 	    jointDef.lowerAngle = -MathUtils.PI / 4.0f;
 	    jointDef.upperAngle = MathUtils.PI / 4.0f;
 	    world.createJoint(jointDef);
-	    //bodyParts.add(jointDef);
 	    
 	    
 	    //Second Right Leg Top 
@@ -294,7 +282,6 @@ public class BasicPhysicsEngineUsingBox2D {
 		SjointDef.lowerAngle = -MathUtils.PI / 4.0f;
 		SjointDef.upperAngle = MathUtils.PI / 4.0f;
 	    world.createJoint(SjointDef);
-	    //bodyParts.add(SjointDef);
 	    
 	    //RIght Leg Bottom
 	    BasicPolygon tLeftParent = polygons.get(0);
@@ -308,7 +295,6 @@ public class BasicPhysicsEngineUsingBox2D {
 		BottomjointDef.lowerAngle = -2.3f;
 		BottomjointDef.upperAngle =  -1.2172f ;
 	    world.createJoint(BottomjointDef);
-	    //bodyParts.add(BottomjointDef);
 	    
 	    
 	    //RIght Leg second Bottom
@@ -323,7 +309,6 @@ public class BasicPhysicsEngineUsingBox2D {
 		secondBottomjointDef.lowerAngle = -2.3f;
 		secondBottomjointDef.upperAngle =  -1.380f ;
 	    world.createJoint(secondBottomjointDef);
-	    //bodyParts.add(secondBottomjointDef);
 	    
 	    
 	    
@@ -338,7 +323,6 @@ public class BasicPhysicsEngineUsingBox2D {
 		jointDef1.lowerAngle = -MathUtils.PI / 4.0f;
 		jointDef1.upperAngle = MathUtils.PI / 4.0f;		
 	    world.createJoint(jointDef1);
-	    //bodyParts.add(jointDef1);
 	    
 	  //First Left Leg TOp
 	    BasicPolygon stRight = polygons.get(5);
@@ -351,7 +335,6 @@ public class BasicPhysicsEngineUsingBox2D {
 		sjointDef1.lowerAngle = -MathUtils.PI / 4.0f;
 		sjointDef1.upperAngle = MathUtils.PI / 4.0f;		
 	    world.createJoint(sjointDef1);
-	    //bodyParts.add(sjointDef1);
 	  //Left Leg Bottom
 		BasicPolygon tRightChild = polygons.get(3);
 		RevoluteJointDef BottomjointDef1=new RevoluteJointDef();
@@ -363,7 +346,6 @@ public class BasicPhysicsEngineUsingBox2D {
 		BottomjointDef1.lowerAngle =  -2.26893f;
 		BottomjointDef1.upperAngle =  -1.309f;
 	    world.createJoint(BottomjointDef1);
-	    //bodyParts.add(BottomjointDef1);
 	    // Secnod Left Bottom
 	    BasicPolygon sbRightParent = polygons.get(5);
 	    BasicPolygon sbRightChild = polygons.get(7);
@@ -376,7 +358,6 @@ public class BasicPhysicsEngineUsingBox2D {
 		sBottomjointDef1.lowerAngle =  -2.26893f;
 		sBottomjointDef1.upperAngle =  -1.309f;
 	    world.createJoint(sBottomjointDef1);
-	    //bodyParts.add(sBottomjointDef1);
 	    //
 	    DistanceJointDef lfDestJoint = new DistanceJointDef();
 	    BodyLeg lfDest = newLegPos.get(0);
@@ -388,12 +369,9 @@ public class BasicPhysicsEngineUsingBox2D {
 	    lfDestJoint.dampingRatio = 0;
 	    lfDestJoint.collideConnected = false;
 		world.createJoint(lfDestJoint);
-		//bodyParts.add(lfDestJoint);
+
 	    
-		
-	    
-	    
-	    
+	    //RightShoulderJoint
 		RevoluteJointDef lfDestJoint1 = new RevoluteJointDef();
 		BodyLeg lfDest1 = newLegPos1.get(0);
 		lfDestJoint1.bodyA = mainBody.body;
@@ -406,7 +384,8 @@ public class BasicPhysicsEngineUsingBox2D {
 	    lfDestJoint1.maxMotorTorque = 0f;
 	    lfDestJoint1.motorSpeed = 0f;
 		world.createJoint(lfDestJoint1);
-	    
+		
+		 //RightShoulderJoint to leg
 		DistanceJointDef lfDestJointTest = new DistanceJointDef();
 	    lfDestJointTest.bodyA = lfDest1.body;
 	    lfDestJointTest.bodyB = lfDest.body; 
@@ -426,7 +405,8 @@ public class BasicPhysicsEngineUsingBox2D {
 	    rfDestJoint.length = 1.05f;
 	    rfDestJoint.collideConnected = false;
 		world.createJoint(rfDestJoint);
-		//bodyParts.add(rfDestJoint);
+		
+		//Left ShoulderJoint
 		RevoluteJointDef rfDestJoint1 = new RevoluteJointDef();
 		BodyLeg rfDest1 = newLegPos1.get(1);
 	    rfDestJoint1.bodyA = mainBody.body;
@@ -440,6 +420,7 @@ public class BasicPhysicsEngineUsingBox2D {
 	    rfDestJoint1.collideConnected = false;
 		world.createJoint(rfDestJoint1);
 		
+		//Left ShoulderJoint to leg
 		DistanceJointDef rfDestJointTest = new DistanceJointDef();
 	    rfDestJointTest.bodyA = rfDest1.body;
 	    rfDestJointTest.bodyB = rfDest.body;
@@ -469,7 +450,8 @@ public class BasicPhysicsEngineUsingBox2D {
 	    rsDestJoint.dampingRatio = 0;
 	    rsDestJoint.collideConnected = false;
 		world.createJoint(rsDestJoint);
-		//bodyParts.add(rsDestJoint);
+		
+		
 		//FinalToe RF
 		BodyLeg frToe = LegPos.get(0);
 		frToe.body.setFixedRotation(true);
@@ -479,7 +461,7 @@ public class BasicPhysicsEngineUsingBox2D {
 		BottomFToejointDef.collideConnected=false;
 		BottomFToejointDef.localAnchorA=new Vec2((polyWidth) ,(polyHeight/2));
 		 world.createJoint(BottomFToejointDef);
-		// bodyParts.add(BottomFToejointDef);
+
 		//FinalToe Rs
 		BodyLeg srToe = LegPos.get(2);
 		frToe.body.setFixedRotation(true);
@@ -489,7 +471,7 @@ public class BasicPhysicsEngineUsingBox2D {
 		BottomsToejointDef.collideConnected=false;
 		BottomsToejointDef.localAnchorA=new Vec2((1.5f) ,(polyHeight/2));
 		 world.createJoint(BottomsToejointDef);
-		// bodyParts.add(BottomsToejointDef);
+
 		//FinalToe LF
 		BodyLeg lrToe = LegPos.get(1);
 		lrToe.body.setFixedRotation(true);
@@ -499,7 +481,7 @@ public class BasicPhysicsEngineUsingBox2D {
 		BottomLFToejointDef.collideConnected=false;
 		BottomLFToejointDef.localAnchorA=new Vec2((polyWidth) ,(polyHeight/2));
 		world.createJoint(BottomLFToejointDef);
-		//bodyParts.add(BottomLFToejointDef);
+
 		//FinalToe LS
 		BodyLeg lsToe = LegPos.get(3);
 		lsToe.body.setFixedRotation(true);
@@ -509,7 +491,7 @@ public class BasicPhysicsEngineUsingBox2D {
 		BottomLSToejointDef.collideConnected=false;
 		BottomLSToejointDef.localAnchorA=new Vec2((1.5f) ,(polyHeight/2));
 		world.createJoint(BottomLSToejointDef);
-		//bodyParts.add(BottomLSToejointDef);
+
 		//LegSceneors RightFirst
 		Body frToeScesor = legSensors.get(0).body;
 		frToeScesor.setFixedRotation(true);
@@ -519,56 +501,50 @@ public class BasicPhysicsEngineUsingBox2D {
 		frToeScesorJoint.localAnchorB = new Vec2(.25f,0);
 		frToeScesorJoint.collideConnected=false;
 		world.createJoint(frToeScesorJoint);
-		//bodyParts.add(frToeScesorJoint);
 		
 
-		
-		
-		
 		//LegSceneors RightSceond
-				Body srToeScesor = legSensors.get(2).body;
-				srToeScesor.setFixedRotation(true);
-				RevoluteJointDef srToeScesorJoint=new RevoluteJointDef();
-				srToeScesorJoint.bodyA = srToe.body;
-				srToeScesorJoint.bodyB = srToeScesor;
-				srToeScesorJoint.localAnchorB = new Vec2(-.15f,0);
-				srToeScesorJoint.collideConnected=false;
-				world.createJoint(srToeScesorJoint);
+		Body srToeScesor = legSensors.get(2).body;
+		srToeScesor.setFixedRotation(true);
+		RevoluteJointDef srToeScesorJoint=new RevoluteJointDef();
+		srToeScesorJoint.bodyA = srToe.body;
+		srToeScesorJoint.bodyB = srToeScesor;
+		srToeScesorJoint.localAnchorB = new Vec2(-.15f,0);
+		srToeScesorJoint.collideConnected=false;
+		world.createJoint(srToeScesorJoint);
 				
 
-				//LegSceneors LeftFirst
-				Body flToeScesor = legSensors.get(1).body;
-				flToeScesor.setFixedRotation(true);
-				RevoluteJointDef flToeScesorJoint=new RevoluteJointDef();
-				flToeScesorJoint.bodyA = lrToe.body;
-				flToeScesorJoint.bodyB = flToeScesor;
-				flToeScesorJoint.localAnchorB = new Vec2(.25f,0);
-				flToeScesorJoint.collideConnected=false;
-				world.createJoint(flToeScesorJoint);
-				
-				//LegSceneors LeftFirst
-				Body slToeScesor = legSensors.get(3).body;
-				slToeScesor.setFixedRotation(true);
-				RevoluteJointDef slToeScesorJoint=new RevoluteJointDef();
-				slToeScesorJoint.bodyA = lsToe.body;
-				slToeScesorJoint.bodyB = slToeScesor;
-				slToeScesorJoint.localAnchorB = new Vec2(.25f,0);
-				slToeScesorJoint.collideConnected=false;
-				world.createJoint(slToeScesorJoint);
-				
+		//LegSceneors LeftFirst
+		Body flToeScesor = legSensors.get(1).body;
+		flToeScesor.setFixedRotation(true);
+		RevoluteJointDef flToeScesorJoint=new RevoluteJointDef();
+		flToeScesorJoint.bodyA = lrToe.body;
+		flToeScesorJoint.bodyB = flToeScesor;
+		flToeScesorJoint.localAnchorB = new Vec2(.25f,0);
+		flToeScesorJoint.collideConnected=false;
+		world.createJoint(flToeScesorJoint);
 		
+		//LegSceneors LeftFirst
+		Body slToeScesor = legSensors.get(3).body;
+		slToeScesor.setFixedRotation(true);
+		RevoluteJointDef slToeScesorJoint=new RevoluteJointDef();
+		slToeScesorJoint.bodyA = lsToe.body;
+		slToeScesorJoint.bodyB = slToeScesor;
+		slToeScesorJoint.localAnchorB = new Vec2(.25f,0);
+		slToeScesorJoint.collideConnected=false;
+		world.createJoint(slToeScesorJoint);
 			 
-			//DIstance for each limb
-			DistanceList.add(new Vec2(1.47f,0.84f));
-			DistanceList.add(new Vec2(1.57f,0.78f));
-			DistanceList.add(new Vec2(2.14f,1.66f));
-			DistanceList.add(new Vec2(2.1f,1.64f));
-			
-			
-			GhostLegAngle.add(new Vec2(60,+0.75f));
-			GhostLegAngle.add(new Vec2(115,-0.75f));
-			GhostLegAngle.add(new Vec2(20,+0.75f));
-			GhostLegAngle.add(new Vec2(175,-0.75f));
+		//DIstance for each limb
+		DistanceList.add(new Vec2(1.47f,0.84f));
+		DistanceList.add(new Vec2(1.57f,0.78f));
+		DistanceList.add(new Vec2(2.14f,1.66f));
+		DistanceList.add(new Vec2(2.1f,1.64f));
+		
+		// CHECK DISTANCE to force to push the new leg postion 
+		GhostLegAngle.add(new Vec2(50,+0.95f));
+		GhostLegAngle.add(new Vec2(115,-0.75f));
+		GhostLegAngle.add(new Vec2(20,+0.75f));
+		GhostLegAngle.add(new Vec2(175,-0.75f));
 			
 		
 		//particles.add(new BasicParticle(r,r,5,12, r,false, Color.GRAY, includeInbuiltCollisionDetection));
@@ -578,17 +554,16 @@ public class BasicPhysicsEngineUsingBox2D {
 		
 		switch (layout) {
 		case MAINLEVEL: {
-			//barriers.add(new AnchoredBarrier_StraightLine(-5f+2.5f,WORLD_HEIGHT,-5f+2.5f,WORLD_HEIGHT/2.5f+0.435f,Color.RED));
-			barriers.add(new AnchoredBarrier_StraightLine(-25f+2.5f,WORLD_HEIGHT/2.5f+0.435f,7+3.5f,WORLD_HEIGHT/2.5f+0.435f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(-5f+2.5f,WORLD_HEIGHT*3,-5f+2.5f,WORLD_HEIGHT/2.5f+0.435f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(-5f+2.5f,WORLD_HEIGHT/2.5f+0.435f,7+3.5f,WORLD_HEIGHT/2.5f+0.435f,Color.RED));
 			barriers.add(new AnchoredBarrier_StraightLine(7+3.5f,WORLD_HEIGHT/2.5f+0.435f,7+3.5f+2.5f,WORLD_HEIGHT/2.5f+1.435f,Color.RED));
 			barriers.add(new AnchoredBarrier_StraightLine(7+3.5f+2.5f,WORLD_HEIGHT/2.5f+1.435f,9+3.5f+2.5f,WORLD_HEIGHT/2.5f+0.435f,Color.RED));
 			barriers.add(new AnchoredBarrier_StraightLine(9+3.5f+2.5f,WORLD_HEIGHT/2.5f+0.435f,35,WORLD_HEIGHT/2.5f+0.435f,Color.RED));
 			barriers.add(new AnchoredBarrier_StraightLine(35,WORLD_HEIGHT/2.5f+0.435f,38,WORLD_HEIGHT/4.5f,Color.RED));
 			barriers.add(new AnchoredBarrier_StraightLine(38,WORLD_HEIGHT/4.5f,42,WORLD_HEIGHT/4.5f,Color.RED));
-			barriers.add(new AnchoredBarrier_StraightLine(42,WORLD_HEIGHT/4.5f,42,WORLD_HEIGHT/22.5f,Color.RED));
-			barriers.add(new AnchoredBarrier_StraightLine(42,WORLD_HEIGHT/4.5f,45,WORLD_HEIGHT/4.5f,Color.RED));//Remove
-			barriers.add(new AnchoredBarrier_StraightLine(42,WORLD_HEIGHT/22.5f,45,WORLD_HEIGHT/22.5f,Color.RED));
-			barriers.add(new AnchoredBarrier_StraightLine(45,WORLD_HEIGHT/4.5f,45,WORLD_HEIGHT/22.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(42,WORLD_HEIGHT/4.5f,42,WORLD_HEIGHT/25.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(42,WORLD_HEIGHT/25.5f,45,WORLD_HEIGHT/25.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(45,WORLD_HEIGHT/22.5f,45,WORLD_HEIGHT/4.5f,Color.RED));
 			barriers.add(new AnchoredBarrier_StraightLine(45,WORLD_HEIGHT/4.5f,55,WORLD_HEIGHT/4.5f,Color.RED));
 			barriers.add(new AnchoredBarrier_StraightLine(55,WORLD_HEIGHT/4.5f,56,WORLD_HEIGHT/4,Color.RED));
 			barriers.add(new AnchoredBarrier_StraightLine(56,WORLD_HEIGHT/4,57,WORLD_HEIGHT/4.5f,Color.RED));
@@ -600,8 +575,16 @@ public class BasicPhysicsEngineUsingBox2D {
 			barriers.add(new AnchoredBarrier_StraightLine(62,WORLD_HEIGHT/4f,63,WORLD_HEIGHT/4.5f,Color.RED));
 			barriers.add(new AnchoredBarrier_StraightLine(63,WORLD_HEIGHT/4.5f,64,WORLD_HEIGHT/4f,Color.RED));
 			barriers.add(new AnchoredBarrier_StraightLine(64,WORLD_HEIGHT/4f,65,WORLD_HEIGHT/4.5f,Color.RED));
-			barriers.add(new AnchoredBarrier_StraightLine(64,WORLD_HEIGHT/4.5f,66,WORLD_HEIGHT/4.5f,Color.RED));
-			barriers.add(new AnchoredBarrier_StraightLine(66,WORLD_HEIGHT/4.5f,100,WORLD_HEIGHT/4.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(65,WORLD_HEIGHT/4.5f,66,WORLD_HEIGHT/4.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(66,WORLD_HEIGHT/4.5f,80,WORLD_HEIGHT/4.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(80,WORLD_HEIGHT/4.5f,80,WORLD_HEIGHT/22.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(80,WORLD_HEIGHT/22.5f,85,WORLD_HEIGHT/22.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(85,WORLD_HEIGHT/22.5f,85,WORLD_HEIGHT/4.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(85,WORLD_HEIGHT/4.5f,100,WORLD_HEIGHT/4.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(100,WORLD_HEIGHT/4.5f,100,WORLD_HEIGHT/22.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(100,WORLD_HEIGHT/22.5f,104,WORLD_HEIGHT/22.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(104,WORLD_HEIGHT/22.5f,104,WORLD_HEIGHT/5.5f,Color.RED));
+			barriers.add(new AnchoredBarrier_StraightLine(104,WORLD_HEIGHT/5.5f,125,WORLD_HEIGHT/5.5f,Color.RED));
 			break;
 		}
 			case CHALLENGE: {
@@ -615,12 +598,10 @@ public class BasicPhysicsEngineUsingBox2D {
 			
 		}
 		gameover=false;
-		System.out.println("gameover2"+ gameover);
 	}
-	
+	//Reset game loop
 	public void resetLevel()
 	{
-		System.out.println("Resetgameover2"+ gameover);
 		particles .clear();
 		grappleObj .clear();
 		polygons.clear();
@@ -635,8 +616,9 @@ public class BasicPhysicsEngineUsingBox2D {
 		 DistanceList.clear();
 		 GhostLegAngle.clear();
 		 startGame();
-		 //BasicPhysicsEngineUsingBox2D()
 		 check= false;
+		 canMoveRight = false;
+		 canMoveLeft = false;
 		 numTrial=0;
 		 
 	}
@@ -668,6 +650,8 @@ public class BasicPhysicsEngineUsingBox2D {
 		}
 	}
 	
+	
+	//Contact listener class
 	ContactListener contactListener = new ContactListener() {
 		
 		@Override
@@ -684,14 +668,6 @@ public class BasicPhysicsEngineUsingBox2D {
 		
 		@Override
 		public void endContact(Contact contact) {
-			Fixture f1 = contact.getFixtureA();
-			Fixture f2 = contact.getFixtureB();
-			
-			Body b1 = f1.getBody();
-			Body b2 = f2.getBody();
-			
-			Object o1 = b1.getUserData();
-			Object o2 = b2.getUserData();
 		}
 		
 		@Override
@@ -708,7 +684,6 @@ public class BasicPhysicsEngineUsingBox2D {
 				{
 				BulletList.remove(o1);
 				world.destroyBody(b1);
-				System.out.println("o1 = " + o1 + ", o2 = " + o2);
 				}
 				
 			else if(o1.getClass() == AnchoredBarrier_StraightLine.class && o2.getClass() == BasicProjectile.class)
@@ -738,6 +713,7 @@ public class BasicPhysicsEngineUsingBox2D {
 					Body Spikebody = trigger.manipulatableBody;
 					Spikebody.setActive(false);
 					Spikes.remove(0);
+					numTrial=3;	
 					
 				}
 				BulletList.remove(o1);
@@ -755,15 +731,11 @@ public class BasicPhysicsEngineUsingBox2D {
 					BasicPolygon trigger = (BasicPolygon) o1;
 					trigger.changewallPosition();
 					
-					System.out.println("Check2 collision ");
 					numTrial=1;
 				}
 				else if(numTrial==1)
 				{
-//					BasicPolygon trigger = (BasicPolygon) o1;
-//					Body newGrappleObj  = trigger.manipulatableBody;
-//					BasicParticle NewGrapple = (BasicParticle) newGrappleObj.getUserData();
-//					grappleObj.add(NewGrapple);
+
 					
 				}
 				else if(numTrial==2)
@@ -772,6 +744,7 @@ public class BasicPhysicsEngineUsingBox2D {
 					Body Spikebody = trigger.manipulatableBody;
 					Spikebody.setActive(false);
 					Spikes.remove(0);
+					numTrial=3;	
 				}
 				trials.remove(o1);
 				world.destroyBody(b1);
@@ -801,30 +774,24 @@ public class BasicPhysicsEngineUsingBox2D {
 		    		}
 				}
 			
-			if(o1.getClass() == BasicPolygon.class && o2.getClass() == BodyLeg.class)
+			if(o1.getClass() == BasicPolygon.class && o2.getClass() == BodyLeg.class && !grabObjReached)
 			{
 				BasicPolygon trigger = (BasicPolygon) o1;
 				Body wallBody = trigger.manipulatableBody;
-				if(wallBody.getPosition().y<12f)
-				{
-					trigger.changewallPosition();
-				}
-				
+				wallBody.setActive(false);
+				trials.remove(1);
+				world.destroyBody(wallBody);
+				grabObjReached=true;
+				numTrial=2;				
 			}
-			else if(o2.getClass() == BasicPolygon.class && o2.getClass() == BodyLeg.class)
+			else if(o2.getClass() == BasicPolygon.class && o2.getClass() == BodyLeg.class && !grabObjReached)
 			{
 				BasicPolygon trigger = (BasicPolygon) o1;
 				Body wallBody = trigger.manipulatableBody;
-				if(wallBody.getPosition().y<12f)
-				{
-					wallBody.m_type = BodyType.DYNAMIC;
-					trigger.changewallPosition();
-				}
-				else
-				{
-					wallBody.m_type = BodyType.STATIC;
-					wallBody.setLinearVelocity(new Vec2(wallBody.getLinearVelocity()));
-				}
+				trials.remove(1);
+				world.destroyBody(wallBody);
+				grabObjReached=true;
+				numTrial=2;			
 			}
 			
 		}
@@ -863,8 +830,7 @@ public class BasicPhysicsEngineUsingBox2D {
 	float shootBuffer=7f;
 	float shootCounter=7f;
 	boolean canShoot = true;
-	boolean canMoveRight = true;
-	boolean canMoveLeft = true;
+	
 	DistanceJointDef FreezeJointR = new DistanceJointDef();
 	boolean FreezeRight;
 	Joint jointR;
@@ -883,8 +849,6 @@ public class BasicPhysicsEngineUsingBox2D {
 		
 		if(!gameover)
 		{
-			System.out.println("MousePoionter " +(linex1) + " " +(liney1)+" " +(-linex2+SCREEN_WIDTH)  + " "+ (liney2));
-			
 			if(isGrounded(LegPos.get(0)) && isGrounded(LegPos.get(1)) && isGrounded(LegPos.get(2)) && isGrounded(LegPos.get(3)))
 				FullBodyGrounded=true;
 			else			
@@ -910,12 +874,14 @@ public class BasicPhysicsEngineUsingBox2D {
 			int VELOCITY_ITERATIONS=NUM_EULER_UPDATES_PER_SCREEN_REFRESH;
 			int POSITION_ITERATIONS=NUM_EULER_UPDATES_PER_SCREEN_REFRESH;
 			
+			//Movement Left
 			if(BasicKeyListener.isMoveLeft() && canMoveLeft &&(isGrounded(newLegPos.get(0)) || isGrounded(newLegPos.get(1)) ||
 					 isGrounded(newLegPos.get(2)) || isGrounded(newLegPos.get(3))))
 			{			
 				particles.get(0).body.setLinearVelocity(new Vec2(-AddForce,particles.get(0).body.getLinearVelocity().y));
 				check = true;
 			}
+			//Movement Right
 			else if(BasicKeyListener.isMoveRight() && canMoveRight && (isGrounded(newLegPos.get(0)) || isGrounded(newLegPos.get(1)) ||
 					 isGrounded(newLegPos.get(2)) || isGrounded(newLegPos.get(3))))
 			{
@@ -927,19 +893,20 @@ public class BasicPhysicsEngineUsingBox2D {
 			 {
 				 particles.get(0).body.setLinearVelocity(new Vec2(0,particles.get(0).body.getLinearVelocity().y));
 			 }
-			 
+			 //Hang move right
 			if(isHanging && BasicKeyListener.isMoveRight())
 			 {
 				particles.get(0).body.setLinearVelocity(new Vec2(AddForce , particles.get(0).body.getLinearVelocity().y));
 				LegPos.get(0).body.setLinearVelocity(new Vec2(AddForce , AddForce/2));
 			 }
+			//Hang move left
 			 if(isHanging && BasicKeyListener.isMoveLeft())
 			{
 				particles.get(0).body.setLinearVelocity(new Vec2(-AddForce , AddForce));
 				LegPos.get(1).body.setLinearVelocity(new Vec2(-AddForce , AddForce/2));
 			}
 			 
-			 
+			 // Aim
 			 if(newRightMousePressed)
 			 {
 				 showLine=true; 
@@ -964,14 +931,13 @@ public class BasicPhysicsEngineUsingBox2D {
 			  else if(!BasicKeyListener.interactPressed() && joint!=null && isHanging)
 			 {
 				 isHanging = false;
-				System.out.println(" CheckJoint" + joint);
 				world.destroyJoint(joint);
 				showCurve=false;
 				joint=null;
 			 }
+			  //AddForce after grapple
 			 if(!BasicKeyListener.interactPressed() && Justhang && !FullBodyGrounded)
 			  {
-				  System.out.println(" AfterHangForce " + AfterHangForce);
 				  Vec2 NormVec2 = AfterHangForce.normalise();
 				  mainPlayerBody.setLinearVelocity(new Vec2(NormVec2.x*35,mainPlayerBody.getLinearVelocity().y));
 				  Justhang=false;
@@ -980,10 +946,7 @@ public class BasicPhysicsEngineUsingBox2D {
 			  AddForceifWall(2,3);
 			  FreezeRLegs();
 			  
-			  if(newRightMousePressed)
-			 {
-				showLine=true; 
-			 }	 
+			  //Shoot
 			  if(newLeftMousePressed && showLine && canShoot)
 			  {
 				  
@@ -992,10 +955,8 @@ public class BasicPhysicsEngineUsingBox2D {
 				  float newLiney1 = convertScreenYtoWorldY(liney1);
 				  float newLinex2 = convertScreenXtoWorldX(linex2);
 				  float newLiney2 = convertScreenYtoWorldY(liney2);
-				  System.out.println("line "+ newLinex1+ " " + newLiney1 + " " + newLinex2+" " + newLiney2);
 				  float DifferenceX = newLinex2-newLinex1;
 				  float DifferenceY = newLiney2-newLiney1;
-				  System.out.println("Difference " + DifferenceX + " " + DifferenceY );
 				  Vec2 CheckDirection = new Vec2(DifferenceX,DifferenceY);
 				  shootCounter=0;
 				  showLine=false;
@@ -1016,6 +977,12 @@ public class BasicPhysicsEngineUsingBox2D {
 			 if(shootTrialObj.body.getPosition().y>12f)
 			 {
 				 shootTrialObj.body.m_type = BodyType.STATIC;
+			 }
+			 
+			 if(mainPlayerBody.getPosition().x>110)
+			 {
+				 End();
+				 
 			 }
 			for (BasicParticle p:particles) {
 				p.notificationOfNewTimestep();
@@ -1039,7 +1006,26 @@ public class BasicPhysicsEngineUsingBox2D {
 
 	}
 	
-	
+	public void End()
+	{
+		gameover=true;
+		int LOST= JOptionPane.showConfirmDialog(null, "                     You WON:                "+""
+				
+		    				+"\n PLAY AGAIN ",
+		    				"Leggy's Logic", JOptionPane.YES_NO_OPTION);
+		    		if(LOST==JOptionPane.YES_OPTION)
+		    		{
+		    			resetLevel();
+		    		}
+		    		else if(LOST==JOptionPane.NO_OPTION)
+		    		{
+		    			System.exit(0);
+		    		}
+		    		else if(LOST==JOptionPane.CLOSED_OPTION)
+		    		{
+		    			System.exit(0);
+		    		}
+	}
 	public void SpiderLegs()
 	{
 		//Leg Movement
@@ -1080,7 +1066,7 @@ public class BasicPhysicsEngineUsingBox2D {
 			isWalled(legSensors.get(i));
 		}
 	}
-
+	//Check if  ground
 	WorldManifold worldManifold = new WorldManifold();
 	public boolean isGrounded(BodyLeg Leg) {
 		Body body = Leg.body; 
@@ -1088,24 +1074,25 @@ public class BasicPhysicsEngineUsingBox2D {
 	        Contact contact = ce.contact;
 	        if (contact.isTouching()) {
 	            contact.getWorldManifold(worldManifold);
-	            //System.out.println( " grounded");
 	            return Leg.isgrouned=true;
 	        }
 	    }
 	    return Leg.isgrouned=false;
 	}
+	//check if wall
 	public boolean isWalled(BasicPolygon Leg) {
 		Body body = Leg.body; 
 	    for (ContactEdge ce = body.getContactList(); ce != null; ce = ce.next) {
 	        Contact contact = ce.contact;
 	        if (contact.isTouching()) {
 	            contact.getWorldManifold(worldManifold);
-	            //System.out.println( " grounded");
 	            return Leg.isWalled=true;
 	        }
 	    }
 	    return Leg.isWalled=false;
 	}
+	
+	//Prevent player from moving forward if there is a wall
 	public void AddForceifWall(int n, int m)
 	{			
 			if(legSensors.get(n).isWalled)
@@ -1126,7 +1113,7 @@ public class BasicPhysicsEngineUsingBox2D {
 			}
 			
 	}
-	
+	// Freeze Leg position when they exceeds from it original position
 	public void FreezeRLegs()
 	{
 		float Dist = Vec2.Distance(newLegPos.get(2).body.getPosition(), newLegPos.get(0).body.getPosition());
@@ -1148,7 +1135,6 @@ public class BasicPhysicsEngineUsingBox2D {
 	public void FreezeLLegs()
 	{
 		float Dist = Vec2.Distance(newLegPos.get(3).body.getPosition(), newLegPos.get(1).body.getPosition());
-		//System.out.println("Distance " + Dist  );
 		if(Dist>1.4f && !isGrounded(newLegPos.get(3)))
 		{
 			
@@ -1165,9 +1151,10 @@ public class BasicPhysicsEngineUsingBox2D {
 			FreezeLeft=false;
 			jointL=null;
 		}
-		//System.out.println("FreezeLEftJoint " + FreezeLeft  );
 	}
 
+	
+	//checks the distance between all the grapple point to the player
 	public void checkTheDistanceBetweenforGrapple()
 	{
 		
@@ -1185,7 +1172,6 @@ public class BasicPhysicsEngineUsingBox2D {
 			{
 				particles.get(1).col = Color.white;
 			}
-			//System.out.println(i + " Distanceee" + distance1 );
 			if(distance1 <= 4.6f && particles.get(0).body.getPosition().y>=0 && joint==null)
 			{
 				canHang=true;

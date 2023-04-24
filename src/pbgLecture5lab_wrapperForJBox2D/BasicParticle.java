@@ -3,18 +3,13 @@ package pbgLecture5lab_wrapperForJBox2D;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
-import org.jbox2d.dynamics.contacts.Contact;
-import org.jbox2d.callbacks.ContactImpulse;
-import org.jbox2d.callbacks.ContactListener;
 
 public class BasicParticle  {
 	/* Author: Michael Fairbank
@@ -27,7 +22,7 @@ public class BasicParticle  {
 	public Color col;
 	protected final Body body;
 
-
+	//Added more variables to the constructor provide more flexibility when creating objects
 	public BasicParticle(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float linearDragForce,short cBits, short mBits,short groupIndex) {
 		World w=BasicPhysicsEngineUsingBox2D.world; // a Box2D object
 		BodyDef bodyDef = new BodyDef();  // a Box2D object
@@ -52,16 +47,13 @@ public class BasicParticle  {
 		this.mass=mass;
 		this.SCREEN_RADIUS=(int)Math.max(BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(radius),1);
 		this.col=col;
-		System.out.println(fixtureDef.filter.groupIndex);
 	}
 
 	public void draw(Graphics2D g) {
 		int x = BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(body.getPosition().x);
 		int y = BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(body.getPosition().y);
-		//int angle = BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(body.getAngle());
 		g.setColor(col);
 		g.fillOval(x - SCREEN_RADIUS, y - SCREEN_RADIUS, 2 * SCREEN_RADIUS, 2 * SCREEN_RADIUS);
-		//g.drawLine(x, y, (x+20) * angle*10, (y+20)  * angle*10);
 	}
 
 

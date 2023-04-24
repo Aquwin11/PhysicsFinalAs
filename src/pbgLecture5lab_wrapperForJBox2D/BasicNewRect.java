@@ -27,6 +27,8 @@ public class BasicNewRect  {
 	protected final Body body;
 	private final Path2D.Float polygonPath;
 
+	
+	//This class is similar to the BasicPolygon class with additional variables in the constructor
 	public BasicNewRect(float sx, float sy, float vx, float vy, float radius, Color col, float mass, float rollingFriction, int numSides, Body destroyableBody,short cBits, short mBits,short groupIndex) {
 		this(sx, sy, vx, vy, radius, col, mass, rollingFriction,mkRegularPolygon(numSides, radius),numSides,cBits,mBits,groupIndex);
 	}
@@ -49,23 +51,9 @@ public class BasicNewRect  {
 		body.createFixture(fixtureDef);
 		body.setFixedRotation(true);
 		body.setUserData(this);
-//		// code to test adding a second fixture:
-//		PolygonShape shape2 = new PolygonShape();
-//		Vec2[] vertices2 = verticesOfPath2D(polygonPath, numSides);
-//		for (int i=0;i<vertices2.length;i++) {
-//			vertices2[i]=new Vec2(vertices2[i].x+0.7f,vertices2[i].y+0.7f);
-//		}
-//		shape2.set(vertices2, numSides);
-//		FixtureDef fixtureDef2 = new FixtureDef();// This class is from Box2D
-//		fixtureDef2.shape = shape2;
-//		fixtureDef2.density = 1;//(float) (mass/(Math.PI*radius*radius));
-//		fixtureDef2.friction = 0.1f;
-//		fixtureDef2.restitution = 0.5f;
-//		body.createFixture(fixtureDef2);
 		this.rollingFriction=rollingFriction;
 		this.mass=mass;
 		this.ratioOfScreenScaleToWorldScale=BasicPhysicsEngineUsingBox2D.convertWorldLengthToScreenLength(1);
-		System.out.println("Screenradius="+ratioOfScreenScaleToWorldScale);
 		this.col=col;
 		this.polygonPath=polygonPath;
 	}
@@ -73,13 +61,11 @@ public class BasicNewRect  {
 	public void draw(Graphics2D g) {
 		g.setColor(Color.RED);
 		Vec2 position = body.getPosition();
-		//float angle = body.getAngle(); 
 		float angle = 1.5708f; 
 		AffineTransform af = new AffineTransform();
 		af.translate(BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(position.x), BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(position.y));
 		af.scale(ratioOfScreenScaleToWorldScale, -ratioOfScreenScaleToWorldScale);// there is a minus in here because screenworld is flipped upsidedown compared to physics world
 		af.rotate(angle); 
-		//System.out.println("ANgle " + body.getPosition());
 		Path2D.Float p = new Path2D.Float (polygonPath,af);
 		g.fill(p);
 	}

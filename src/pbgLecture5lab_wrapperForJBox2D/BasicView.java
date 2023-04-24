@@ -4,14 +4,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.desktop.ScreenSleepEvent;
-import java.util.ArrayList;
 import java.awt.BasicStroke;
-import java.awt.Canvas;
 
 import javax.swing.JComponent;
 
-import org.jbox2d.common.Vec2;
 
 public class BasicView extends JComponent {
 	/* Author: Michael Fairbank
@@ -37,24 +33,27 @@ public class BasicView extends JComponent {
 		// paint the background
 		g.setColor(BG_COLOR);
 		g.fillRect(0, 0, getWidth(), getHeight());
+		//allows view to follow the player when they move
 		g.translate(BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(-game.particles.get(0).body.getPosition().x)+BasicPhysicsEngineUsingBox2D.SCREEN_WIDTH,BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(-game.particles.get(0).body.getPosition().y)-BasicPhysicsEngineUsingBox2D.SCREEN_HEIGHT*1.25f);
-//		g.translate(BasicPhysicsEngineUsingBox2D.convertWorldXtoScreenX(-game.particles.get(0).body.getPosition().x)+BasicPhysicsEngineUsingBox2D.SCREEN_WIDTH,BasicPhysicsEngineUsingBox2D.convertWorldYtoScreenY(-game.particles.get(0).body.getPosition().y)-BasicPhysicsEngineUsingBox2D.SCREEN_HEIGHT*1.25f);
-		//g.translate(-game.particles.get(0).body.getPosition().x,game.particles.get(0).body.getPosition().y );
-		//System.out.println(game.SCREEN_WIDTH);
 		for (BasicParticle p : game.particles)
 			p.draw(g);
 		for (BasicParticle p : game.grappleObj)
 			p.draw(g);
 		for (BasicPolygon p : game.polygons)
 			p.draw(g);	
-		for (BasicPolygon p : game.legSensors)
-			p.draw(g);
-		for (BodyLeg p : game.newLegPos)
-			p.draw(g);
+		//Enable this to see the sensors in the leg
+		//To Check if the player is near a wall
+//		for (BasicPolygon p : game.legSensors)
+//			p.draw(g);
+		//Enable this to see the new leg Position
+		//For Automatic foot placement
+//		for (BodyLeg p : game.newLegPos)
+//			p.draw(g);
 		for (BasicProjectile p : game.BulletList)
 			p.draw(g);
-		for (BodyLeg p : game.newLegPos1)
-			p.draw(g);
+		//Enable this to see the spider sholder joints
+//		for (BodyLeg p : game.newLegPos1)
+//			p.draw(g);
 		for (BodyLeg p : game.LegPos)
 			p.draw(g);
 		for (BasicPolygon p : game.trials)
@@ -66,20 +65,18 @@ public class BasicView extends JComponent {
 		if (game.showLine) {
 			if(game.canShoot)
 			{
-				g.setColor(Color.WHITE);
+				g.setColor(Color.WHITE); // change color when player is able to shoot
 			}
 			else
 			{
-				g.setColor(Color.DARK_GRAY);
+				g.setColor(Color.DARK_GRAY); // change color when player is not able to shoot
 			}
-			g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[] {10}, 0));
+			g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[] {10}, 0));//Doted lines
 			g.drawLine(game.linex1,game. liney1,game. linex2 , game.liney2 );
 		}
 		if (game.showCurve) {
 			g.setColor(Color.WHITE);
-			//g.translate(-game.particles.get(0).body.getPosition().x,game.particles.get(0).body.getPosition().y );
-			//g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[] {10}, 0));
-			g.drawLine(game.linex1,game. liney1,game.ropelineX,game.ropelineY);
+			g.drawLine(game.linex1,game. liney1,game.ropelineX,game.ropelineY);//grapple lines
 		}
 		
 	}

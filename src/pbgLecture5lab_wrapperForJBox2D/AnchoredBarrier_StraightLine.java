@@ -19,7 +19,6 @@ public class AnchoredBarrier_StraightLine extends AnchoredBarrier {
 	 */
 
 	private Vec2 startPos,endPos;
-	private final Color col;
 	public final Body body;
 
 
@@ -42,8 +41,6 @@ public class AnchoredBarrier_StraightLine extends AnchoredBarrier {
 		ChainShape chainShape = new ChainShape();
 		chainShape.createChain(vertices, vertices.length);
 		body.createFixture(chainShape, 0);
-
-		this.col=col;
 	}
 
 	@Override
