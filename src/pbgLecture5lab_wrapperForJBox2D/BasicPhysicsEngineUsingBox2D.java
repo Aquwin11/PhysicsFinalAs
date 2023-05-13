@@ -602,8 +602,8 @@ public class BasicPhysicsEngineUsingBox2D {
 	//Reset game loop
 	public void resetLevel()
 	{
-		particles .clear();
-		grappleObj .clear();
+		particles.clear();
+		grappleObj.clear();
 		polygons.clear();
 		Spikes.clear();
 		barriers.clear();
@@ -615,12 +615,12 @@ public class BasicPhysicsEngineUsingBox2D {
 		 trials.clear();
 		 DistanceList.clear();
 		 GhostLegAngle.clear();
-		 startGame();
-		 check= false;
 		 canMoveRight = false;
 		 canMoveLeft = false;
+		 startGame();
+		 check= false;
+		 grabObjReached=false;
 		 numTrial=0;
-		 
 	}
 	static boolean newRightMousePressed;
 	static boolean newLeftMousePressed;
